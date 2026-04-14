@@ -55,7 +55,7 @@ function getMXOffset() {
 const MX_OFFSET = getMXOffset();
 
 const routes = [
-  { path: '/manifiesto', label: 'Manifiesto',  component: <Manifesto /> },
+  // { path: '/manifiesto', label: 'Manifiesto', component: <Manifesto /> }, // V2
   { path: '/panel',      label: 'Panel',        component: <Dashboard /> },
   { path: '/galeria',    label: 'Galería',       component: <Gallery />   },
   { path: '/estado',     label: 'Estado',        component: <Status />    },
@@ -173,7 +173,7 @@ export default function App() {
           <Route path="/panel"      element={<Dashboard />} />
           <Route path="/galeria"    element={<Gallery />}   />
           <Route path="/estado"     element={<Status />}    />
-          <Route path="*"           element={<Navigate to="/manifiesto" replace />} />
+          <Route path="*"           element={<Navigate to="/panel" replace />} />
         </Routes>
       </div>
 
