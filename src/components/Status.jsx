@@ -13,14 +13,14 @@ export default function Status() {
         </h1>
       </div>
 
-      {/* ── Qué es ── */}
+      {/* ── Concepto ── */}
       <section className="status-section">
         <div className="status-section-label">01 &mdash; Concepto</div>
         <p>
-          MextrategIA es un dispositivo de net-art que adquiri&oacute; los dominios <strong>.ai</strong> de
-          los grandes corporativos mexicanos que han evadido la transformaci&oacute;n digital y la
-          modernizaci&oacute;n &eacute;tica. Cada dominio es una intervenci&oacute;n: el equivalente digital de
-          pintar un mural sobre la fachada de una empresa.
+          MextrategIA adquiri&oacute; los dominios <strong>.ai</strong> de los grandes corporativos
+          mexicanos que han evadido la transformaci&oacute;n digital y la modernizaci&oacute;n &eacute;tica.
+          Cada dominio es una intervenci&oacute;n: el equivalente digital de pintar un mural
+          sobre la fachada de una empresa.
         </p>
         <p>
           La diferencia es ontol&oacute;gica. El mural puede borrarse con pintura; el activo digital
@@ -35,9 +35,52 @@ export default function Status() {
         </p>
       </section>
 
+      {/* ── Galería ── */}
+      <section className="status-section">
+        <div className="status-section-label">02 &mdash; Galer&iacute;a</div>
+        <p>
+          Cada dominio intervenido es un espacio de exhibici&oacute;n. No un sitio corporativo
+          vaciado &mdash;sino una galer&iacute;a activa: entre cinco y diez artistas por territorio,
+          seleccionados por su relaci&oacute;n cr&iacute;tica con la empresa intervenida o con su sector.
+        </p>
+        <p>
+          Las obras se tokenizar&aacute;n en blockchain como certificados de intervenci&oacute;n.
+          Cada token es la prueba inmutable de que ese territorio digital fue ocupado, fechado
+          y documentado antes de que la empresa reaccionara. <strong>El registro no puede borrarse.</strong>
+        </p>
+        <p>
+          MextrategIA abre convocatoria permanente a artistas que quieran exhibir dentro
+          de estos espacios. La plataforma act&uacute;a como curadu&iacute;a, infraestructura y contrato:
+          los artistas ganan visibilidad y participaci&oacute;n en la venta; el dominio gana densidad
+          cultural y valor acumulado.
+        </p>
+      </section>
+
+      {/* ── Redención ── */}
+      <section className="status-section">
+        <div className="status-section-label">03 &mdash; Redenci&oacute;n</div>
+        <p>
+          El empresario o la corporaci&oacute;n puede recuperar su dominio. El precio es el que
+          marca el reloj en el momento de la transacci&oacute;n: la suma exacta de cada segundo
+          de inacci&oacute;n acumulado desde el lanzamiento del proyecto.
+        </p>
+        <p>
+          Pero comprar el dominio implica comprar tambi&eacute;n las obras. No es posible
+          adquirir la infraestructura y desalojar el arte. <strong>La redenci&oacute;n incluye el
+          patrocinio.</strong> La corporaci&oacute;n se convierte, en el acto de compra,
+          en coleccionista de las obras que la critican.
+        </p>
+        <p>
+          Los ingresos de la venta se distribuyen entre los artistas exhibidos en ese
+          dominio y el fondo de operaci&oacute;n del proyecto. El dominio pasa a manos de la
+          empresa. La obra permanece tokenizada en blockchain: el registro de la
+          intervenci&oacute;n no desaparece con la venta.
+        </p>
+      </section>
+
       {/* ── Cómo funciona ── */}
       <section className="status-section">
-        <div className="status-section-label">02 &mdash; Sistema</div>
+        <div className="status-section-label">04 &mdash; Sistema</div>
         <p>
           El sitio opera como una obra en tiempo real. Desde el momento en que el proyecto fue
           lanzado, un reloj interno acumula el precio de cada dominio segundo a segundo.
@@ -85,7 +128,7 @@ export default function Status() {
 
       {/* ── La Fórmula ── */}
       <section className="status-section">
-        <div className="status-section-label">03 &mdash; F&oacute;rmula</div>
+        <div className="status-section-label">05 &mdash; F&oacute;rmula</div>
         <p>
           El precio de cada dominio no responde a la oferta y la demanda. Responde a variables
           que miden el da&ntilde;o acumulado. &Eacute;sta es la f&oacute;rmula central de la obra:
@@ -186,7 +229,7 @@ export default function Status() {
 
       {/* ── Estado V1 ── */}
       <section className="status-section">
-        <div className="status-section-label">04 &mdash; V1</div>
+        <div className="status-section-label">06 &mdash; V1</div>
 
         <div className="status-items">
           <div className="status-item status-item--done">
@@ -220,22 +263,22 @@ export default function Status() {
           <div className="status-item status-item--pending">
             <span className="status-item-mark">○</span>
             <div>
-              <div className="status-item-title">Backend global de participación</div>
-              <div className="status-item-desc">Votos y comentarios actualmente locales por dispositivo. V2 tendrá base de datos compartida</div>
+              <div className="status-item-title">Galerías por dominio</div>
+              <div className="status-item-desc">Cada dominio .ai como espacio de exhibición con 5–10 artistas. Convocatoria abierta. 4 galerías pendientes de activación</div>
             </div>
           </div>
           <div className="status-item status-item--pending">
             <span className="status-item-mark">○</span>
             <div>
-              <div className="status-item-title">Galería de obras completa</div>
-              <div className="status-item-desc">4 obras pendientes de desarrollo (cinepolis.ai, cinemex.ai, telmex.ai, inbursa.ai)</div>
+              <div className="status-item-title">Tokenización en blockchain</div>
+              <div className="status-item-desc">Certificación de cada intervención y obra como token. El registro permanece aunque el dominio sea vendido</div>
             </div>
           </div>
           <div className="status-item status-item--pending">
             <span className="status-item-mark">○</span>
             <div>
-              <div className="status-item-title">Lotes digitales en blockchain</div>
-              <div className="status-item-desc">Certificación de intervenciones como tokens en cadena. Pendiente de implementación</div>
+              <div className="status-item-title">Mecanismo de redención</div>
+              <div className="status-item-desc">Proceso de compra para corporativos: precio acumulado + obras incluidas. Distribución entre artistas y fondo del proyecto</div>
             </div>
           </div>
           <div className="status-item status-item--pending">
