@@ -219,24 +219,23 @@ export default function Dashboard() {
   }, []);
 
   // ── Cálculos ──────────────────────────────────────────────
+  // sentimentMap: S dinámico por empresa, calculado desde comentarios reales
   const sentimentMap = {};
   corporations.forEach(c => { sentimentMap[c.id] = getSentiment(c, comments); });
 
-  const extraVotes   = (corpId) => dbVotes[corpId] || 0;
-  const elapsed      = getElapsedTime(now);
-  const totalDebt    = calculateTotalDebtWithVotes(
-    Object.fromEntries(corporations.map(c => [c.id, extraVotes(c.id)])),
-    sentimentMap, now
-  );
-  const totalVotes   = corporations.reduce((s, c) => s + c.votes + extraVotes(c.id), 0);
+  // getDB(id): votos reales de Supabase para esa empresa
+  const getDB      = (corpId) => dbVotes[corpId] || 0;
+  const elapsed    = getElapsedTime(now);
+  const totalDebt  = calculateTotalDebtWithVotes(dbVotes, sentimentMap, now);
+  const totalVotes = corporations.reduce((s, c) => s + c.votes + getDB(c.id), 0);
 
   const sortedByPrice = [...corporations].sort(
     (a, b) =>
-      calculatePriceWithVotes(b, extraVotes(b.id), sentimentMap[b.id], now) -
-      calculatePriceWithVotes(a, extraVotes(a.id), sentimentMap[a.id], now)
+      calculatePriceWithVotes(b, getDB(b.id), sentimentMap[b.id], now) -
+      calculatePriceWithVotes(a, getDB(a.id), sentimentMap[a.id], now)
   );
 
-  const maxVotes = Math.max(...corporations.map(c => c.votes + extraVotes(c.id)), 1);
+  const maxVotes = Math.max(...corporations.map(c => c.votes + getDB(c.id)), 1);
 
   // ── Human gate ────────────────────────────────────────────
   function requireHuman(action) {
@@ -381,7 +380,7 @@ export default function Dashboard() {
         </div>
         {sortedByPrice.map((corp, i) => {
           const S    = sentimentMap[corp.id];
-          const xv   = extraVotes(corp.id);
+          const xv   = getDB(corp.id);
           const price = calculatePriceWithVotes(corp, xv, S, now);
           const rate  = calculateRateWithVotes(corp, xv, S);
           return (
@@ -422,7 +421,7 @@ export default function Dashboard() {
         <div className="ranking-list">
           {sortedByPrice.map((corp, i) => {
             const S        = sentimentMap[corp.id];
-            const totalV   = corp.votes + extraVotes(corp.id);
+            const totalV   = corp.votes + getDB(corp.id);
             const neg      = comments.filter(c => c.corpId === corp.id && c.type === 'negativo');
             const pos      = comments.filter(c => c.corpId === corp.id && c.type === 'positivo');
             const likesNeg = neg.reduce((s,c) => s+(c.likes||0), 0);
@@ -630,7 +629,7 @@ export default function Dashboard() {
         <div className="formula-rates">
           <div className="formula-rates-label">Tasas Individuales Activas</div>
           {corporations.map(corp => {
-            const rate = calculateRateWithVotes(corp, extraVotes(corp.id), sentimentMap[corp.id]);
+            const rate = calculateRateWithVotes(corp, getDB(corp.id), sentimentMap[corp.id]);
             return (
               <div className="formula-rate-row" key={corp.id}>
                 <span className="formula-rate-domain">{corp.domain}</span>
