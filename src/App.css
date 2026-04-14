@@ -849,8 +849,21 @@
 }
 
 .gallery-card-footer {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
   padding: 12px 20px; border-top: 1px solid var(--border); font-size: 9px;
+}
+
+.gallery-visit-btn {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--accent-orange); border: 1px solid var(--accent-orange);
+  padding: 4px 12px; text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.gallery-visit-btn:hover { background: var(--accent-orange); color: var(--bg-panel); opacity: 1; }
+.gallery-visit-btn--pending {
+  color: var(--text-muted); border-color: var(--border);
+  pointer-events: none; opacity: 0.45;
 }
 .gallery-card-lot { font-family: var(--font-mono); color: var(--text-muted); letter-spacing: 1.5px; }
 .gallery-card-status--activo   { font-family: var(--font-mono); color: var(--accent-green); letter-spacing: 1.5px; text-transform: uppercase; font-size: 9px; }

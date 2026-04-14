@@ -121,6 +121,14 @@ export default function Gallery() {
               <span className={`gallery-card-status gallery-card-status--${work.status}`}>
                 {work.status}
               </span>
+              <a
+                href={`https://${work.domain}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`gallery-visit-btn${!work.isReal ? ' gallery-visit-btn--pending' : ''}`}
+              >
+                VISITAR
+              </a>
             </div>
           </div>
         ))}
