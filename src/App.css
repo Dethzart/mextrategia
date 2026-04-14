@@ -223,9 +223,8 @@
   text-overflow: ellipsis;
 }
 .counter-value.total           { color: var(--accent-orange); }
-.counter-value.counter-time    { font-family: var(--font-mono); font-weight: 400; letter-spacing: 0; color: var(--text-secondary); font-size: 22px; }
+.counter-value.counter-time    { color: var(--text-secondary); }
 .counter-value.counter-domains { color: var(--text-primary); }
-.counter-value.counter-votes   { font-size: 22px; }
 
 /* ── Domain Cards ── */
 .domain-card {
@@ -1024,10 +1023,8 @@
   }
   .counter-block:nth-child(3n)       { border-right: none; }
   .counter-block:nth-last-child(-n+3) { border-bottom: none; }
-  .counter-value                      { font-size: clamp(11px, 3.2vw, 17px); }
-  .counter-value.total                { font-size: clamp(11px, 3.2vw, 17px); }
-  .counter-value.counter-time         { font-size: clamp(10px, 2.8vw, 15px); }
-  .counter-label                      { font-size: 7px; }
+  .counter-value      { font-size: clamp(11px, 3.2vw, 17px); }
+  .counter-label      { font-size: 7px; }
 
   /* Reviews mobile */
   .domain-card    { flex-wrap: wrap; gap: 8px; }

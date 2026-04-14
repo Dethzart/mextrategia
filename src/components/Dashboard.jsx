@@ -355,9 +355,8 @@ export default function Dashboard() {
         <div className="counter-block">
           <div className="counter-label">Tiempo Transcurrido</div>
           <div className="counter-value counter-time">
-            {String(elapsed.days).padStart(3,'0')}d{' '}
-            {String(elapsed.hours).padStart(2,'0')}:{String(elapsed.mins).padStart(2,'0')}:
-            {String(elapsed.secs).padStart(2,'0')}
+            {elapsed.days}d{' '}
+            {String(elapsed.hours).padStart(2,'0')}:{String(elapsed.mins).padStart(2,'0')}:{String(elapsed.secs).padStart(2,'0')}
           </div>
         </div>
         <div className="counter-block">
