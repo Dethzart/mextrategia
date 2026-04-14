@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Dashboard from './components/Dashboard';
 import Manifesto from './components/Manifesto';
@@ -41,32 +42,36 @@ function TickerStrip() {
   );
 }
 
-const viewLabels = {
-  manifesto: 'Manifiesto',
-  dashboard: 'Panel',
-  gallery:   'Galería',
-  status:    'Estado',
-};
+const routes = [
+  { path: '/manifiesto', label: 'Manifiesto',  component: <Manifesto /> },
+  { path: '/panel',      label: 'Panel',        component: <Dashboard /> },
+  { path: '/galeria',    label: 'Galería',       component: <Gallery />   },
+  { path: '/estado',     label: 'Estado',        component: <Status />    },
+];
 
 export default function App() {
-  const [view,         setView]         = useState('manifesto');
+  const navigate     = useNavigate();
+  const location     = useLocation();
   const [menuOpen,     setMenuOpen]     = useState(false);
   const [time,         setTime]         = useState(new Date());
   const [headerHidden, setHeaderHidden] = useState(false);
-  const menuRef    = useRef(null);
+  const menuRef     = useRef(null);
   const lastScrollY = useRef(0);
+
+  const currentPath = location.pathname;
+  const showTicker  = currentPath !== '/panel';
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
 
-  // Scroll al inicio al cambiar de vista
+  // Scroll al inicio al cambiar de ruta
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setHeaderHidden(false);
     lastScrollY.current = 0;
-  }, [view]);
+  }, [currentPath]);
 
   useEffect(() => {
     function onScroll() {
@@ -75,7 +80,6 @@ export default function App() {
       else if (y > lastScrollY.current) setHeaderHidden(true);
       else                              setHeaderHidden(false);
       lastScrollY.current = y;
-      // Cierra el menú móvil al hacer scroll
       if (y > 10) setMenuOpen(false);
     }
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -91,9 +95,7 @@ export default function App() {
     return () => document.removeEventListener('mousedown', onClickOut);
   }, [menuOpen]);
 
-  function navigate(v) { setView(v); setMenuOpen(false); }
-
-  const showTicker = view !== 'dashboard';
+  function goTo(path) { navigate(path); setMenuOpen(false); }
 
   return (
     <div className="app">
@@ -101,19 +103,19 @@ export default function App() {
       {/* ── Sticky Header ── */}
       <div className={`site-header${headerHidden ? ' site-header--hidden' : ''}${!showTicker ? ' site-header--no-ticker' : ''}`}>
         <div className="topbar">
-          <div className="topbar-logo" onClick={() => navigate('manifesto')}>
+          <div className="topbar-logo" onClick={() => goTo('/manifiesto')}>
             MEXTRATEGIA
           </div>
 
           {/* Desktop nav */}
           <nav className="topbar-nav desktop-nav">
-            {Object.entries(viewLabels).map(([key, label]) => (
+            {routes.map(r => (
               <button
-                key={key}
-                className={view === key ? 'active' : ''}
-                onClick={() => setView(key)}
+                key={r.path}
+                className={currentPath === r.path ? 'active' : ''}
+                onClick={() => goTo(r.path)}
               >
-                {label}
+                {r.label}
               </button>
             ))}
           </nav>
@@ -132,13 +134,13 @@ export default function App() {
               </button>
               {menuOpen && (
                 <div className="mobile-menu">
-                  {Object.entries(viewLabels).map(([key, label]) => (
+                  {routes.map(r => (
                     <button
-                      key={key}
-                      className={view === key ? 'active' : ''}
-                      onClick={() => navigate(key)}
+                      key={r.path}
+                      className={currentPath === r.path ? 'active' : ''}
+                      onClick={() => goTo(r.path)}
                     >
-                      {label}
+                      {r.label}
                     </button>
                   ))}
                 </div>
@@ -152,10 +154,13 @@ export default function App() {
 
       {/* ── Content ── */}
       <div className={`main-content${!showTicker ? ' main-content--no-ticker' : ''}`}>
-        {view === 'dashboard' && <Dashboard />}
-        {view === 'manifesto' && <Manifesto />}
-        {view === 'gallery'   && <Gallery />}
-        {view === 'status'    && <Status />}
+        <Routes>
+          <Route path="/manifiesto" element={<Manifesto />} />
+          <Route path="/panel"      element={<Dashboard />} />
+          <Route path="/galeria"    element={<Gallery />}   />
+          <Route path="/estado"     element={<Status />}    />
+          <Route path="*"           element={<Navigate to="/manifiesto" replace />} />
+        </Routes>
       </div>
 
       {/* ── Footer ── */}
