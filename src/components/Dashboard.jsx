@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { supabase } from '../lib/supabase';
 import {
   corporations,
   calculatePriceWithVotes,
@@ -8,35 +9,41 @@ import {
   getElapsedTime,
 } from '../data/corporations';
 
-// ── Storage keys ──────────────────────────────────────
-const VOTE_KEY       = 'mextrategia_vote_v2';
-const COMMENTS_KEY   = 'mextrategia_comments_v2';
-const MY_COMMENT_KEY = 'mextrategia_my_comment_v1'; // { id, corpId } — 1 total
-const MY_LIKE_KEY    = 'mextrategia_my_like_v1';    // commentId number — 1 total
-const HUMAN_KEY      = 'mextrategia_human_v1';      // sessionStorage
+// ── Identidad del usuario (localStorage, nunca va a Supabase) ──
+const UID_KEY   = 'mextrategia_uid_v1';
+const HUMAN_KEY = 'mextrategia_human_v1'; // sessionStorage
 
-// ── Loaders ───────────────────────────────────────────
-const load = (key, fallback, parse = true) => {
-  try { const v = localStorage.getItem(key); return v ? (parse ? JSON.parse(v) : v) : fallback; }
-  catch { return fallback; }
-};
+function getUserId() {
+  let uid = localStorage.getItem(UID_KEY);
+  if (!uid) { uid = crypto.randomUUID(); localStorage.setItem(UID_KEY, uid); }
+  return uid;
+}
 const isHumanSession = () => sessionStorage.getItem(HUMAN_KEY) === '1';
 
-// ── Sentimiento dinámico ──────────────────────────────
-// neg: +0.02/comentario, +0.003/like_neg
-// pos: -0.015/comentario, -0.002/like_pos
-// S con piso 0.1 y techo 1.0
+// ── Normaliza fila de Supabase al formato interno ──────────────
+function normalizeComment(row) {
+  return {
+    id:        row.id,
+    corpId:    row.corp_id,
+    text:      row.text,
+    timestamp: new Date(row.created_at).getTime(),
+    likes:     row.likes || 0,
+    type:      row.type,
+  };
+}
+
+// ── Sentimiento dinámico ──────────────────────────────────────
 function getSentiment(corp, comments) {
   const neg      = comments.filter(c => c.corpId === corp.id && c.type === 'negativo');
   const pos      = comments.filter(c => c.corpId === corp.id && c.type === 'positivo');
   const likesNeg = neg.reduce((s, c) => s + (c.likes || 0), 0);
   const likesPos = pos.reduce((s, c) => s + (c.likes || 0), 0);
-  const delta    = neg.length * 0.02  + likesNeg * 0.003
+  const delta    = neg.length * 0.02 + likesNeg * 0.003
                  - pos.length * 0.015 - likesPos * 0.002;
   return Math.min(1, Math.max(0.1, corp.sentiment + delta));
 }
 
-// ── Challenge math ────────────────────────────────────
+// ── Challenge math ────────────────────────────────────────────
 function makeChallenge() {
   const a = Math.floor(Math.random() * 15) + 3;
   const b = Math.floor(Math.random() * 10) + 2;
@@ -45,9 +52,7 @@ function makeChallenge() {
     : { q: `${a + b} − ${b}`, answer: a };
 }
 
-// ── Helpers ───────────────────────────────────────────
-const toExtraVotes = vc => vc ? { [vc]: 1 } : {};
-
+// ── Helpers ───────────────────────────────────────────────────
 function timeAgo(ts) {
   const d = Math.floor((Date.now() - ts) / 1000);
   if (d < 60)    return 'hace un momento';
@@ -66,7 +71,7 @@ function ReviewStars({ rating }) {
   );
 }
 
-// ── Human Verification Modal ──────────────────────────
+// ── Human Verification Modal ──────────────────────────────────
 function ChallengeModal({ onVerified }) {
   const [ch,    setCh]    = useState(makeChallenge);
   const [input, setInput] = useState('');
@@ -78,9 +83,7 @@ function ChallengeModal({ onVerified }) {
       sessionStorage.setItem(HUMAN_KEY, '1');
       onVerified();
     } else {
-      setError(true);
-      setCh(makeChallenge());
-      setInput('');
+      setError(true); setCh(makeChallenge()); setInput('');
       setTimeout(() => setError(false), 2500);
     }
   }
@@ -102,23 +105,15 @@ function ChallengeModal({ onVerified }) {
           </div>
           <div className="challenge-input-row">
             <input
-              type="number"
-              className="challenge-input"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              autoFocus
-              placeholder="—"
-              autoComplete="off"
+              type="number" className="challenge-input"
+              value={input} onChange={e => setInput(e.target.value)}
+              autoFocus placeholder="—" autoComplete="off"
             />
             <button type="submit" className="challenge-submit-btn">
               VERIFICAR Y CONTINUAR
             </button>
           </div>
-          {error && (
-            <div className="challenge-error">
-              Respuesta incorrecta &mdash; nuevo intento.
-            </div>
-          )}
+          {error && <div className="challenge-error">Respuesta incorrecta &mdash; nuevo intento.</div>}
         </form>
         <p className="challenge-note">
           Esta verificación expira al cerrar la pesta&ntilde;a.
@@ -129,102 +124,220 @@ function ChallengeModal({ onVerified }) {
   );
 }
 
-// ── Dashboard ─────────────────────────────────────────
+// ── Dashboard ─────────────────────────────────────────────────
 export default function Dashboard() {
-  const [now,          setNow]         = useState(Date.now());
-  const [votedCorp,    setVotedCorp]   = useState(() => load(VOTE_KEY, null, false));
-  const [recentVote,   setRecentVote]  = useState(null);
-  const [comments,     setComments]    = useState(() => load(COMMENTS_KEY, []));
-  const [myComment,    setMyComment]   = useState(() => load(MY_COMMENT_KEY, null));
-  const [myLike,       setMyLike]      = useState(() => load(MY_LIKE_KEY, null));
-  const [humanOk,      setHumanOk]     = useState(isHumanSession);
-  const [showChallenge,setShowChallenge] = useState(false);
-  const [pendingAction,setPendingAction] = useState(null);
-  const [commentText,  setCommentText] = useState('');
-  const [commentCorp,  setCommentCorp] = useState(corporations[0].id);
-  const [commentType,  setCommentType] = useState('negativo');
-  const [honeypot,     setHoneypot]    = useState(''); // anti-bot
+  const [now,           setNow]          = useState(Date.now());
+  const [dbVotes,       setDbVotes]      = useState({}); // { corpId: count }
+  const [votedCorp,     setVotedCorp]    = useState(null);
+  const [recentVote,    setRecentVote]   = useState(null);
+  const [comments,      setComments]     = useState([]);
+  const [myComment,     setMyComment]    = useState(null);
+  const [myLike,        setMyLike]       = useState(null);
+  const [loading,       setLoading]      = useState(true);
+  const [humanOk,       setHumanOk]      = useState(isHumanSession);
+  const [showChallenge, setShowChallenge]= useState(false);
+  const [pendingAction, setPendingAction]= useState(null);
+  const [commentText,   setCommentText]  = useState('');
+  const [commentCorp,   setCommentCorp]  = useState(corporations[0].id);
+  const [commentType,   setCommentType]  = useState('negativo');
+  const [honeypot,      setHoneypot]     = useState('');
+  const userId = useRef(getUserId());
 
+  // ── Ticker de precios ──────────────────────────────────────
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 100);
     return () => clearInterval(t);
   }, []);
 
-  // ── Sentiment & price inputs ──────────────────────
+  // ── Carga inicial + suscripción realtime ──────────────────
+  useEffect(() => {
+    const uid = userId.current;
+
+    async function loadData() {
+      // Votos
+      const { data: votes } = await supabase.from('votes').select('corp_id, user_id');
+      const counts = {};
+      corporations.forEach(c => { counts[c.id] = 0; });
+      votes?.forEach(v => { counts[v.corp_id] = (counts[v.corp_id] || 0) + 1; });
+      setDbVotes(counts);
+      const myVote = votes?.find(v => v.user_id === uid);
+      setVotedCorp(myVote?.corp_id || null);
+
+      // Comentarios
+      const { data: rows } = await supabase
+        .from('comments')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      const normalized = (rows || []).map(normalizeComment);
+      setComments(normalized);
+      const myC = rows?.find(r => r.user_id === uid);
+      setMyComment(myC ? { id: myC.id, corpId: myC.corp_id } : null);
+
+      // Like del usuario
+      const { data: likeRow } = await supabase
+        .from('comment_likes')
+        .select('comment_id')
+        .eq('user_id', uid)
+        .maybeSingle();
+      setMyLike(likeRow?.comment_id || null);
+
+      setLoading(false);
+    }
+
+    loadData();
+
+    // Realtime: nuevos comentarios y actualizaciones de likes
+    const channel = supabase.channel('dashboard')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'comments' },
+        ({ new: row }) => {
+          setComments(prev => [normalizeComment(row), ...prev].slice(0, 100));
+        }
+      )
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'comments' },
+        ({ new: row }) => {
+          setComments(prev => prev.map(c => c.id === row.id ? normalizeComment(row) : c));
+        }
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'votes' },
+        async () => {
+          // Recalcula conteo de votos al detectar cambios
+          const { data: votes } = await supabase.from('votes').select('corp_id');
+          const counts = {};
+          corporations.forEach(c => { counts[c.id] = 0; });
+          votes?.forEach(v => { counts[v.corp_id] = (counts[v.corp_id] || 0) + 1; });
+          setDbVotes(counts);
+        }
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, []);
+
+  // ── Cálculos ──────────────────────────────────────────────
   const sentimentMap = {};
   corporations.forEach(c => { sentimentMap[c.id] = getSentiment(c, comments); });
 
-  const extraVotes = toExtraVotes(votedCorp);
-  const elapsed    = getElapsedTime(now);
-  const totalDebt  = calculateTotalDebtWithVotes(extraVotes, sentimentMap, now);
-  const totalVotes = corporations.reduce((s, c) => s + c.votes + (extraVotes[c.id] || 0), 0);
+  const extraVotes   = (corpId) => dbVotes[corpId] || 0;
+  const elapsed      = getElapsedTime(now);
+  const totalDebt    = calculateTotalDebtWithVotes(
+    Object.fromEntries(corporations.map(c => [c.id, extraVotes(c.id)])),
+    sentimentMap, now
+  );
+  const totalVotes   = corporations.reduce((s, c) => s + c.votes + extraVotes(c.id), 0);
 
-  // Sorted by current price (highest = most punished)
   const sortedByPrice = [...corporations].sort(
     (a, b) =>
-      calculatePriceWithVotes(b, extraVotes[b.id]||0, sentimentMap[b.id], now) -
-      calculatePriceWithVotes(a, extraVotes[a.id]||0, sentimentMap[a.id], now)
+      calculatePriceWithVotes(b, extraVotes(b.id), sentimentMap[b.id], now) -
+      calculatePriceWithVotes(a, extraVotes(a.id), sentimentMap[a.id], now)
   );
 
-  const maxVotes = Math.max(...corporations.map(c => c.votes + (extraVotes[c.id] || 0)), 1);
-  const maxS     = 1.0; // S is clamped to 1.0
+  const maxVotes = Math.max(...corporations.map(c => c.votes + extraVotes(c.id)), 1);
 
-  // ── Human gate ────────────────────────────────────
+  // ── Human gate ────────────────────────────────────────────
   function requireHuman(action) {
     if (humanOk) { execute(action); return; }
     setPendingAction(action);
     setShowChallenge(true);
   }
-
   function onVerified() {
-    setHumanOk(true);
-    setShowChallenge(false);
+    setHumanOk(true); setShowChallenge(false);
     if (pendingAction) { execute(pendingAction); setPendingAction(null); }
   }
-
   function execute(action) {
     if (action.type === 'vote')    doVote(action.corpId);
     if (action.type === 'comment') doComment(action);
     if (action.type === 'like')    doLike(action.commentId);
   }
 
-  // ── Actions ───────────────────────────────────────
-  function doVote(corpId) {
-    const next = votedCorp === corpId ? null : corpId;
-    setVotedCorp(next);
-    if (next) localStorage.setItem(VOTE_KEY, next);
-    else      localStorage.removeItem(VOTE_KEY);
-    if (next) { setRecentVote(corpId); setTimeout(() => setRecentVote(null), 900); }
+  // ── Acciones ──────────────────────────────────────────────
+  async function doVote(corpId) {
+    const uid      = userId.current;
+    const removing = votedCorp === corpId;
+    const prev     = votedCorp;
+
+    // Optimistic update
+    setVotedCorp(removing ? null : corpId);
+    setDbVotes(d => {
+      const next = { ...d };
+      if (removing) {
+        next[corpId] = Math.max(0, (next[corpId] || 0) - 1);
+      } else {
+        if (prev) next[prev] = Math.max(0, (next[prev] || 0) - 1);
+        next[corpId] = (next[corpId] || 0) + 1;
+      }
+      return next;
+    });
+
+    if (!removing) { setRecentVote(corpId); setTimeout(() => setRecentVote(null), 900); }
+
+    // Persiste en Supabase
+    if (removing) {
+      await supabase.from('votes').delete().eq('user_id', uid);
+    } else {
+      await supabase.from('votes')
+        .upsert({ user_id: uid, corp_id: corpId }, { onConflict: 'user_id' });
+    }
   }
 
-  function doComment({ text, corpId, sentiment }) {
+  async function doComment({ text, corpId, sentiment }) {
+    const uid  = userId.current;
     const type = sentiment;
     if (myComment || !text.trim() || honeypot) return;
-    const entry = { id: Date.now(), corpId, text: text.trim(), timestamp: Date.now(), likes: 0, type };
-    const updated = [entry, ...comments].slice(0, 100);
-    setComments(updated);
-    setMyComment({ id: entry.id, corpId });
-    try {
-      localStorage.setItem(COMMENTS_KEY, JSON.stringify(updated));
-      localStorage.setItem(MY_COMMENT_KEY, JSON.stringify({ id: entry.id, corpId }));
-    } catch {}
-    setCommentText('');
+
+    const { data, error } = await supabase
+      .from('comments')
+      .insert({ user_id: uid, corp_id: corpId, text: text.trim(), type })
+      .select()
+      .single();
+
+    if (!error && data) {
+      const entry = normalizeComment(data);
+      setComments(prev => [entry, ...prev].slice(0, 100));
+      setMyComment({ id: data.id, corpId: data.corp_id });
+      setCommentText('');
+    }
   }
 
-  function doLike(commentId) {
+  async function doLike(commentId) {
+    const uid = userId.current;
     if (myLike !== null) return;
-    const updated = comments.map(c =>
-      c.id !== commentId ? c : { ...c, likes: (c.likes || 0) + 1 }
-    );
-    setComments(updated);
-    setMyLike(commentId);
-    try {
-      localStorage.setItem(COMMENTS_KEY, JSON.stringify(updated));
-      localStorage.setItem(MY_LIKE_KEY, JSON.stringify(commentId));
-    } catch {}
+
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+
+    const { error } = await supabase
+      .from('comment_likes')
+      .insert({ user_id: uid, comment_id: commentId });
+
+    if (!error) {
+      // Incrementa el contador
+      await supabase
+        .from('comments')
+        .update({ likes: comment.likes + 1 })
+        .eq('id', commentId);
+
+      setMyLike(commentId);
+      setComments(prev =>
+        prev.map(c => c.id === commentId ? { ...c, likes: c.likes + 1 } : c)
+      );
+    }
   }
 
-  // ── Render ────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard-loading">
+          <span>Cargando datos en tiempo real&hellip;</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
 
@@ -261,10 +374,10 @@ export default function Dashboard() {
           <span className="live-dot" />
         </div>
         {sortedByPrice.map((corp, i) => {
-          const S     = sentimentMap[corp.id];
-          const extra = extraVotes[corp.id] || 0;
-          const price = calculatePriceWithVotes(corp, extra, S, now);
-          const rate  = calculateRateWithVotes(corp, extra, S);
+          const S    = sentimentMap[corp.id];
+          const xv   = extraVotes(corp.id);
+          const price = calculatePriceWithVotes(corp, xv, S, now);
+          const rate  = calculateRateWithVotes(corp, xv, S);
           return (
             <div className="domain-card" key={corp.id}>
               <div className="domain-info">
@@ -288,7 +401,7 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* ── Ranking de Castigo + Análisis de Sentimiento (merged) ── */}
+      {/* ── Ranking de Castigo + Sentimiento (merged) ── */}
       <div className="panel ranking-panel">
         <div className="panel-header">
           <span>Ranking de Castigo &mdash; Votos y Sentimiento</span>
@@ -302,18 +415,18 @@ export default function Dashboard() {
 
         <div className="ranking-list">
           {sortedByPrice.map((corp, i) => {
-            const S          = sentimentMap[corp.id];
-            const totalV     = corp.votes + (extraVotes[corp.id] || 0);
-            const neg        = comments.filter(c => c.corpId === corp.id && c.type === 'negativo');
-            const pos        = comments.filter(c => c.corpId === corp.id && c.type === 'positivo');
-            const likesNeg   = neg.reduce((s,c) => s+(c.likes||0), 0);
-            const likesPos   = pos.reduce((s,c) => s+(c.likes||0), 0);
-            const isMyVote   = votedCorp === corp.id;
+            const S        = sentimentMap[corp.id];
+            const totalV   = corp.votes + extraVotes(corp.id);
+            const neg      = comments.filter(c => c.corpId === corp.id && c.type === 'negativo');
+            const pos      = comments.filter(c => c.corpId === corp.id && c.type === 'positivo');
+            const likesNeg = neg.reduce((s,c) => s+(c.likes||0), 0);
+            const likesPos = pos.reduce((s,c) => s+(c.likes||0), 0);
+            const isMyVote    = votedCorp === corp.id;
             const hasElsewhere = votedCorp !== null && !isMyVote;
-            const justVoted  = recentVote === corp.id;
-            const btnLabel   = justVoted ? 'EMITIDO' : isMyVote ? 'QUITAR' : hasElsewhere ? 'CAMBIAR' : 'VOTAR';
-            const voteBarW   = Math.round((totalV / maxVotes) * 100);
-            const sBarW      = Math.round((S / maxS) * 100);
+            const justVoted   = recentVote === corp.id;
+            const btnLabel    = justVoted ? 'EMITIDO' : isMyVote ? 'QUITAR' : hasElsewhere ? 'CAMBIAR' : 'VOTAR';
+            const voteBarW    = Math.round((totalV / maxVotes) * 100);
+            const sBarW       = Math.round(S * 100);
 
             return (
               <div
@@ -359,21 +472,14 @@ export default function Dashboard() {
                   <div className="ranking-bar-row">
                     <span className="ranking-bar-label">S</span>
                     <div className="ranking-bar-track">
-                      <div
-                        className="ranking-bar-fill ranking-bar-fill--s"
-                        style={{ width: `${sBarW}%` }}
-                      />
+                      <div className="ranking-bar-fill ranking-bar-fill--s" style={{ width: `${sBarW}%` }} />
                     </div>
                   </div>
                 </div>
 
                 <div className="ranking-sentiment-detail">
-                  <span className="ranking-neg">
-                    neg {neg.length} ({likesNeg} likes)
-                  </span>
-                  <span className="ranking-pos">
-                    pos {pos.length} ({likesPos} likes)
-                  </span>
+                  <span className="ranking-neg">neg {neg.length} ({likesNeg} likes)</span>
+                  <span className="ranking-pos">pos {pos.length} ({likesPos} likes)</span>
                 </div>
               </div>
             );
@@ -394,7 +500,6 @@ export default function Dashboard() {
           <span className="live-dot" />
         </div>
 
-        {/* Form */}
         {myComment ? (
           <div className="comment-done-notice">
             Ya publicaste tu comentario sobre{' '}
@@ -412,27 +517,15 @@ export default function Dashboard() {
               requireHuman({ type:'comment', text:commentText, corpId:commentCorp, sentiment:commentType });
             }}
           >
-            {/* Honeypot — invisible para humanos, trampa para bots */}
             <input
-              type="text"
-              name="website"
-              tabIndex="-1"
-              autoComplete="off"
-              aria-hidden="true"
+              type="text" name="website" tabIndex="-1" autoComplete="off" aria-hidden="true"
               style={{ position:'absolute', left:'-9999px', opacity:0, height:0 }}
-              value={honeypot}
-              onChange={e => setHoneypot(e.target.value)}
+              value={honeypot} onChange={e => setHoneypot(e.target.value)}
             />
 
             <div className="comment-form-top">
-              <select
-                className="comment-select"
-                value={commentCorp}
-                onChange={e => setCommentCorp(e.target.value)}
-              >
-                {corporations.map(c => (
-                  <option key={c.id} value={c.id}>{c.domain}</option>
-                ))}
+              <select className="comment-select" value={commentCorp} onChange={e => setCommentCorp(e.target.value)}>
+                {corporations.map(c => <option key={c.id} value={c.id}>{c.domain}</option>)}
               </select>
             </div>
 
@@ -453,10 +546,8 @@ export default function Dashboard() {
             <textarea
               className="comment-textarea"
               placeholder="Escribe tu evaluación de esta empresa..."
-              value={commentText}
-              onChange={e => setCommentText(e.target.value)}
-              maxLength={300}
-              rows={3}
+              value={commentText} onChange={e => setCommentText(e.target.value)}
+              maxLength={300} rows={3}
             />
             <div className="comment-form-footer">
               <span className="comment-char-count">{commentText.length}/300</span>
@@ -465,16 +556,15 @@ export default function Dashboard() {
           </form>
         )}
 
-        {/* List */}
         <div className="comment-list">
           {comments.length === 0 ? (
             <div className="comment-empty">Aún no hay comentarios. Sé el primero en evaluar.</div>
           ) : (
             comments.map(c => {
-              const corp      = corporations.find(x => x.id === c.corpId);
-              const isNeg     = c.type === 'negativo';
-              const isMyLike  = myLike === c.id;
-              const canLike   = myLike === null;
+              const corp     = corporations.find(x => x.id === c.corpId);
+              const isNeg    = c.type === 'negativo';
+              const isMyLike = myLike === c.id;
+              const canLike  = myLike === null;
               return (
                 <div className={`comment-item comment-item--${c.type}`} key={c.id}>
                   <div className="comment-item-header">
@@ -534,7 +624,7 @@ export default function Dashboard() {
         <div className="formula-rates">
           <div className="formula-rates-label">Tasas Individuales Activas</div>
           {corporations.map(corp => {
-            const rate = calculateRateWithVotes(corp, extraVotes[corp.id]||0, sentimentMap[corp.id]);
+            const rate = calculateRateWithVotes(corp, extraVotes(corp.id), sentimentMap[corp.id]);
             return (
               <div className="formula-rate-row" key={corp.id}>
                 <span className="formula-rate-domain">{corp.domain}</span>
