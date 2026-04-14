@@ -100,7 +100,9 @@ export default function Gallery() {
             <GalleryVisual work={work} index={i} />
 
             <div className="gallery-card-body">
-              <div className="gallery-card-domain">{work.domain}</div>
+              <a href={`https://${work.domain}`} target="_blank" rel="noopener noreferrer" className="gallery-card-domain-link">
+                <div className="gallery-card-domain">{work.domain}</div>
+              </a>
 
               {work.isReal ? (
                 <>

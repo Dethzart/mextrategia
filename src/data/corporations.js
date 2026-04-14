@@ -22,7 +22,7 @@ export const corporations = [
     domain: 'cinepolis.ai',
     name: 'Cinépolis',
     sector: 'Entretenimiento',
-    capRatio: 0.58,
+    capRatio: 1.0, // empresa privada — no cotiza en bolsa
     ethicsFactor: 2.1,
     sentiment: 0.65,
     votes: 0,
@@ -33,7 +33,7 @@ export const corporations = [
     domain: 'cinemex.ai',
     name: 'Cinemex',
     sector: 'Entretenimiento',
-    capRatio: 0.42,
+    capRatio: 1.0, // empresa privada — no cotiza en bolsa
     ethicsFactor: 3.2,
     sentiment: 0.81,
     votes: 0,

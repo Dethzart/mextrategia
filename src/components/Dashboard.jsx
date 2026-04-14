@@ -398,7 +398,9 @@ export default function Dashboard() {
               <div className="domain-info">
                 <div className="domain-name">
                   <span className="domain-rank">#{i + 1}</span>
-                  {corp.domain}
+                  <a href={`https://${corp.domain}`} target="_blank" rel="noopener noreferrer" className="domain-link">
+                    {corp.domain}
+                  </a>
                 </div>
                 <div className="domain-sector">{corp.sector}</div>
                 <div className="domain-reviews">
@@ -452,7 +454,9 @@ export default function Dashboard() {
                   <div className="ranking-item-left">
                     <span className="ranking-num">#{i + 1}</span>
                     <div className="ranking-corp-info">
-                      <span className="ranking-domain">{corp.domain}</span>
+                      <a href={`https://${corp.domain}`} target="_blank" rel="noopener noreferrer" className="ranking-domain-link">
+                        <span className="ranking-domain">{corp.domain}</span>
+                      </a>
                       <span className="ranking-corp-name">{corp.name}</span>
                     </div>
                   </div>

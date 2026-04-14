@@ -499,6 +499,35 @@
 .formula-var-name  { font-family: var(--font-mono); color: var(--text-secondary); flex-shrink: 0; }
 .formula-var-desc  { font-family: var(--font-sans); font-size: 11px; color: var(--text-muted); text-align: right; }
 
+/* ── Domain links ── */
+.domain-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.domain-link:hover { border-bottom-color: var(--text-primary); opacity: 1; }
+
+.ranking-domain-link {
+  text-decoration: none;
+  color: inherit;
+}
+.ranking-domain-link:hover .ranking-domain {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 1;
+}
+
+.gallery-card-domain-link {
+  text-decoration: none;
+  color: inherit;
+}
+.gallery-card-domain-link:hover .gallery-card-domain {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 1;
+}
+
 .formula-rates {
   margin-top: 20px;
   padding: 12px;
