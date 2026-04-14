@@ -61,13 +61,22 @@ export default function App() {
     return () => clearInterval(t);
   }, []);
 
+  // Scroll al inicio al cambiar de vista
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setHeaderHidden(false);
+    lastScrollY.current = 0;
+  }, [view]);
+
   useEffect(() => {
     function onScroll() {
       const y = window.scrollY;
-      if (y < 10)              setHeaderHidden(false);
+      if (y < 10)                       setHeaderHidden(false);
       else if (y > lastScrollY.current) setHeaderHidden(true);
-      else                     setHeaderHidden(false);
+      else                              setHeaderHidden(false);
       lastScrollY.current = y;
+      // Cierra el menú móvil al hacer scroll
+      if (y > 10) setMenuOpen(false);
     }
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
