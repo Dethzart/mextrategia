@@ -76,13 +76,13 @@ const BASE_RATE = 0.01;
  */
 export function calculatePrice(corp, now = Date.now()) {
   const elapsedSeconds = (now - PROJECT_EPOCH) / 1000;
-  const Fi = 1 + (corp.votes / 1000) * corp.sentiment;
+  const Fi = 1 + Math.log10(1 + corp.votes / 100) * corp.sentiment;
   const ratePerSecond = BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
   return elapsedSeconds * ratePerSecond;
 }
 
 export function calculateRate(corp) {
-  const Fi = 1 + (corp.votes / 1000) * corp.sentiment;
+  const Fi = 1 + Math.log10(1 + corp.votes / 100) * corp.sentiment;
   return BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
 }
 
@@ -104,7 +104,9 @@ export function calculatePriceWithVotes(corp, dbVotes = 0, sentimentOverride = n
   const S              = sentimentOverride !== null ? sentimentOverride : corp.sentiment;
   const elapsedSeconds = (now - PROJECT_EPOCH) / 1000;
   const totalVotes     = corp.votes + dbVotes;
-  const Fi             = 1 + (totalVotes / 1000) * S;   // base 1 + amplificación por votos
+  // Escala logarítmica: precio crece siempre pero con rendimientos decrecientes
+  // Fi = 1 + log10(1 + V/100) × S
+  const Fi             = 1 + Math.log10(1 + totalVotes / 100) * S;
   const ratePerSecond  = BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
   return Math.max(0, elapsedSeconds * ratePerSecond);
 }
@@ -112,7 +114,7 @@ export function calculatePriceWithVotes(corp, dbVotes = 0, sentimentOverride = n
 export function calculateRateWithVotes(corp, dbVotes = 0, sentimentOverride = null) {
   const S          = sentimentOverride !== null ? sentimentOverride : corp.sentiment;
   const totalVotes = corp.votes + dbVotes;
-  const Fi         = 1 + (totalVotes / 1000) * S;
+  const Fi         = 1 + Math.log10(1 + totalVotes / 100) * S;
   return BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
 }
 

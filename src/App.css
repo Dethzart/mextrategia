@@ -193,7 +193,7 @@
 .global-counter {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   background: var(--bg-panel);
   border: 1px solid var(--border);
 }
@@ -578,7 +578,14 @@
 }
 .comment-done-domain { color: var(--accent-orange); }
 
-.comment-list { display: flex; flex-direction: column; }
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 480px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-accent) transparent;
+}
 .comment-empty {
   font-family: var(--font-sans); font-size: 13px; color: var(--text-muted);
   padding: 20px 0; text-align: center;
@@ -964,14 +971,14 @@
 
   .dashboard { grid-template-columns: 1fr; }
 
-  .global-counter { grid-template-columns: 1fr 1fr; }
+  .global-counter { grid-template-columns: repeat(3, 1fr); }
   .counter-block {
     padding: 18px 10px;
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
-  .counter-block:nth-child(2n)      { border-right: none; }
-  .counter-block:nth-last-child(-n+2) { border-bottom: none; }
+  .counter-block:nth-child(3n)       { border-right: none; }
+  .counter-block:nth-last-child(-n+3) { border-bottom: none; }
   .counter-value       { font-size: 20px; }
   .counter-value.total { font-size: 20px; }
   .counter-value.counter-time { font-size: 13px; }

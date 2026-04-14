@@ -224,10 +224,12 @@ export default function Dashboard() {
   corporations.forEach(c => { sentimentMap[c.id] = getSentiment(c, comments); });
 
   // getDB(id): votos reales de Supabase para esa empresa
-  const getDB      = (corpId) => dbVotes[corpId] || 0;
-  const elapsed    = getElapsedTime(now);
-  const totalDebt  = calculateTotalDebtWithVotes(dbVotes, sentimentMap, now);
-  const totalVotes = corporations.reduce((s, c) => s + c.votes + getDB(c.id), 0);
+  const getDB         = (corpId) => dbVotes[corpId] || 0;
+  const elapsed       = getElapsedTime(now);
+  const totalDebt     = calculateTotalDebtWithVotes(dbVotes, sentimentMap, now);
+  const totalVotes    = corporations.reduce((s, c) => s + c.votes + getDB(c.id), 0);
+  const totalComments = comments.length;
+  const totalLikes    = comments.reduce((s, c) => s + (c.likes || 0), 0);
 
   const sortedByPrice = [...corporations].sort(
     (a, b) =>
@@ -369,6 +371,14 @@ export default function Dashboard() {
         <div className="counter-block">
           <div className="counter-label">Votos Acumulados</div>
           <div className="counter-value counter-votes">{totalVotes.toLocaleString()}</div>
+        </div>
+        <div className="counter-block">
+          <div className="counter-label">Comentarios</div>
+          <div className="counter-value counter-comments">{totalComments.toLocaleString()}</div>
+        </div>
+        <div className="counter-block">
+          <div className="counter-label">Likes</div>
+          <div className="counter-value counter-likes">{totalLikes.toLocaleString()}</div>
         </div>
       </div>
 
