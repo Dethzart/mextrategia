@@ -59,7 +59,6 @@ export default function App() {
   const lastScrollY = useRef(0);
 
   const currentPath = location.pathname;
-  const showTicker  = currentPath !== '/panel';
 
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
@@ -101,7 +100,7 @@ export default function App() {
     <div className="app">
 
       {/* ── Sticky Header ── */}
-      <div className={`site-header${headerHidden ? ' site-header--hidden' : ''}${!showTicker ? ' site-header--no-ticker' : ''}`}>
+      <div className={`site-header${headerHidden ? ' site-header--hidden' : ''}`}>
         <div className="topbar">
           <div className="topbar-logo" onClick={() => goTo('/manifiesto')}>
             MEXTRATEGIA
@@ -149,11 +148,13 @@ export default function App() {
           </div>
         </div>
 
-        {showTicker && <TickerStrip />}
       </div>
 
+      {/* ── Ticker: flujo normal, sube con el scroll ── */}
+      <TickerStrip />
+
       {/* ── Content ── */}
-      <div className={`main-content${!showTicker ? ' main-content--no-ticker' : ''}`}>
+      <div className="main-content">
         <Routes>
           <Route path="/manifiesto" element={<Manifesto />} />
           <Route path="/panel"      element={<Dashboard />} />
