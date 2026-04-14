@@ -58,7 +58,7 @@ const routes = [
   // { path: '/manifiesto', label: 'Manifiesto', component: <Manifesto /> }, // V2
   { path: '/panel',      label: 'Panel',        component: <Dashboard /> },
   { path: '/galeria',    label: 'Galería',       component: <Gallery />   },
-  { path: '/estado',     label: 'Estado',        component: <Status />    },
+  // { path: '/estado',  label: 'Estado',        component: <Status />    }, // V2
 ];
 
 export default function App() {
