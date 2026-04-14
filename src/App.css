@@ -213,16 +213,19 @@
 }
 .counter-value {
   font-family: var(--font-sans);
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 300;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.counter-value.total         { color: var(--accent-orange); }
-.counter-value.counter-time  { font-family: var(--font-mono); font-size: 16px; font-weight: 400; letter-spacing: 0; color: var(--text-secondary); }
+.counter-value.total           { color: var(--accent-orange); }
+.counter-value.counter-time    { font-family: var(--font-mono); font-weight: 400; letter-spacing: 0; color: var(--text-secondary); font-size: 22px; }
 .counter-value.counter-domains { color: var(--text-primary); }
-.counter-value.counter-votes   { font-size: 24px; }
+.counter-value.counter-votes   { font-size: 22px; }
 
 /* ── Domain Cards ── */
 .domain-card {
@@ -1015,16 +1018,25 @@
 
   .global-counter { grid-template-columns: repeat(3, 1fr); }
   .counter-block {
-    padding: 18px 10px;
+    padding: 16px 8px;
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
   .counter-block:nth-child(3n)       { border-right: none; }
   .counter-block:nth-last-child(-n+3) { border-bottom: none; }
-  .counter-value       { font-size: 20px; }
-  .counter-value.total { font-size: 20px; }
-  .counter-value.counter-time { font-size: 13px; }
-  .counter-label { font-size: 7px; }
+  .counter-value                      { font-size: clamp(11px, 3.2vw, 17px); }
+  .counter-value.total                { font-size: clamp(11px, 3.2vw, 17px); }
+  .counter-value.counter-time         { font-size: clamp(10px, 2.8vw, 15px); }
+  .counter-label                      { font-size: 7px; }
+
+  /* Reviews mobile */
+  .domain-card    { flex-wrap: wrap; gap: 8px; }
+  .domain-info    { flex: 1 1 100%; }
+  .domain-price-col { flex: 1 1 100%; align-items: flex-start; text-align: left; }
+  .domain-reviews { flex-wrap: wrap; gap: 4px; }
+  .review-badge   { font-size: 9px; }
+  .review-stars   { font-size: 9px; }
+  .domain-price   { font-size: 14px; }
 
   .formula-panel   { grid-column: 1; }
   .comments-panel  { grid-column: 1; }
