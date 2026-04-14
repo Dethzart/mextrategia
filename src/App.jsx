@@ -9,6 +9,7 @@ import {
   corporations,
   calculatePrice,
   calculateRate,
+  calculateTotalDebt,
   formatMXN,
 } from './data/corporations';
 
@@ -124,7 +125,7 @@ export default function App() {
 
           <div className="topbar-right">
             <div className="topbar-clock">
-              {time.toLocaleTimeString('es-MX', { hour12: false })} MXC
+              {formatMXN(calculateTotalDebt(time.getTime()))}
             </div>
             <div className="hamburger-wrapper" ref={menuRef}>
               <button
