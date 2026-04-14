@@ -125,7 +125,7 @@ export default function App() {
 
           <div className="topbar-right">
             <div className="topbar-clock">
-              {formatMXN(calculateTotalDebt(time.getTime()))}
+              {time.toLocaleTimeString('es-MX', { hour12: false })} MXC
             </div>
             <div className="hamburger-wrapper" ref={menuRef}>
               <button
