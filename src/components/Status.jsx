@@ -101,7 +101,7 @@ export default function Status() {
           P<sub>t</sub> = &Sigma;( 0.01 &times; CAP<sub>Act</sub>/CAP<sub>M&aacute;x</sub> &times; F<sub>factor</sub> &times; F<sub>i</sub> )
         </div>
         <div className="status-formula-sub">
-          F<sub>i</sub> = V &times; S &nbsp;&nbsp;|&nbsp;&nbsp;
+          F<sub>i</sub> = 1 + (V/1000 &times; S) &nbsp;&nbsp;|&nbsp;&nbsp;
           S = clamp(0.1, 1, S<sub>base</sub> + neg&times;0.02 + L⁻&times;0.003 &minus; pos&times;0.015 &minus; L⁺&times;0.002)
         </div>
 
@@ -152,9 +152,10 @@ export default function Status() {
           </div>
 
           <div className="status-var">
-            <div className="status-var-name">F<sub>i</sub> = V &times; S &mdash; Participaci&oacute;n p&uacute;blica</div>
+            <div className="status-var-name">F<sub>i</sub> = 1 + (V/1000 &times; S) &mdash; Participaci&oacute;n p&uacute;blica</div>
             <div className="status-var-body">
-              El &uacute;nico factor que el p&uacute;blico controla directamente. Es el producto de dos variables:
+              Base 1 garantiza acumulaci&oacute;n desde el primer segundo. Los votos amplifican la tasa:
+              cada 1000 votos suma S adicional a F<sub>i</sub>.
             </div>
           </div>
 

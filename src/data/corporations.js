@@ -69,20 +69,20 @@ const BASE_RATE = 0.01;
 /**
  * Fórmula de Valoración:
  * Pt = Σ ( 0.01 × CAP_Act/CAP_Máx × F_factor × F_i )
- * where F_i = (votes / 1000) × sentiment
+ * where F_i = 1 + (V/1000 × S)
  *
- * Con 0 votos, F_i = 0 y el precio no acumula.
- * El castigo comienza cuando la ciudadanía vota.
+ * Fi mínimo = 1: el tiempo siempre acumula castigo base.
+ * Los votos amplifican la tasa: cada 1000 votos suma S adicional a Fi.
  */
 export function calculatePrice(corp, now = Date.now()) {
   const elapsedSeconds = (now - PROJECT_EPOCH) / 1000;
-  const Fi = (corp.votes / 1000) * corp.sentiment;
+  const Fi = 1 + (corp.votes / 1000) * corp.sentiment;
   const ratePerSecond = BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
   return elapsedSeconds * ratePerSecond;
 }
 
 export function calculateRate(corp) {
-  const Fi = (corp.votes / 1000) * corp.sentiment;
+  const Fi = 1 + (corp.votes / 1000) * corp.sentiment;
   return BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
 }
 
@@ -101,18 +101,18 @@ export function formatMXN(value) {
 
 // sentimentOverride: valor calculado desde comentarios; si es null usa corp.sentiment
 export function calculatePriceWithVotes(corp, dbVotes = 0, sentimentOverride = null, now = Date.now()) {
-  const S            = sentimentOverride !== null ? sentimentOverride : corp.sentiment;
+  const S              = sentimentOverride !== null ? sentimentOverride : corp.sentiment;
   const elapsedSeconds = (now - PROJECT_EPOCH) / 1000;
-  const totalVotes   = corp.votes + dbVotes;           // base (0) + votos reales de DB
-  const Fi           = (totalVotes / 1000) * S;
-  const ratePerSecond = BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
+  const totalVotes     = corp.votes + dbVotes;
+  const Fi             = 1 + (totalVotes / 1000) * S;   // base 1 + amplificación por votos
+  const ratePerSecond  = BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
   return Math.max(0, elapsedSeconds * ratePerSecond);
 }
 
 export function calculateRateWithVotes(corp, dbVotes = 0, sentimentOverride = null) {
   const S          = sentimentOverride !== null ? sentimentOverride : corp.sentiment;
   const totalVotes = corp.votes + dbVotes;
-  const Fi         = (totalVotes / 1000) * S;
+  const Fi         = 1 + (totalVotes / 1000) * S;
   return BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
 }
 
