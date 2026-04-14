@@ -43,6 +43,17 @@ function TickerStrip() {
   );
 }
 
+// UTC offset de Ciudad de México (CDT/CST según temporada)
+function getMXOffset() {
+  try {
+    const s = new Date().toLocaleString('en', { timeZone: 'America/Mexico_City', timeZoneName: 'shortOffset' });
+    const m = s.match(/GMT([+-]\d+)/);
+    if (m) return 'UTC' + m[1].replace('-', '−');
+  } catch (_) {}
+  return 'UTC−6';
+}
+const MX_OFFSET = getMXOffset();
+
 const routes = [
   { path: '/manifiesto', label: 'Manifiesto',  component: <Manifesto /> },
   { path: '/panel',      label: 'Panel',        component: <Dashboard /> },
@@ -125,7 +136,8 @@ export default function App() {
 
           <div className="topbar-right">
             <div className="topbar-clock">
-              {time.toLocaleTimeString('es-MX', { hour12: false })} MXC
+              {time.toLocaleTimeString('es-MX', { hour12: false, timeZone: 'America/Mexico_City' })}
+              <span className="topbar-tz">{MX_OFFSET}</span>
             </div>
             <div className="hamburger-wrapper" ref={menuRef}>
               <button

@@ -48,6 +48,13 @@
   gap: 20px;
 }
 
+.topbar-tz {
+  color: var(--text-muted);
+  font-size: 8px;
+  margin-left: 4px;
+  letter-spacing: 0.5px;
+}
+
 .topbar-clock {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -1037,6 +1044,50 @@
 
   .formula-panel   { grid-column: 1; }
   .comments-panel  { grid-column: 1; }
+
+  /* ── Ranking mobile ── */
+  .ranking-description { font-size: 11px; margin-bottom: 14px; }
+
+  .ranking-item { padding: 16px 0; gap: 10px; }
+
+  .ranking-item-top { align-items: flex-start; gap: 8px; }
+
+  .ranking-item-right {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .ranking-stats {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+
+  .ranking-stat {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  .ranking-stat-label { font-size: 8px; }
+  .ranking-stat-value { font-size: 12px; }
+
+  .ranking-domain { font-size: 14px; }
+
+  .vote-btn {
+    padding: 9px 16px;
+    font-size: 10px;
+    min-width: 80px;
+    min-height: 36px;
+  }
+
+  .ranking-bar-track { height: 3px; }
+  .ranking-bar-label { font-size: 8px; }
+
+  .ranking-sentiment-detail { gap: 16px; margin-top: 4px; }
+  .ranking-neg, .ranking-pos { font-size: 10px; }
 
   .manifesto { padding: 32px 16px; }
   .manifesto h1 { font-size: 30px; }
