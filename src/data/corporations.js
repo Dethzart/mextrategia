@@ -2,9 +2,8 @@
 // MextrategIA — Corporate Data & Price Engine
 // ═══════════════════════════════════════════════════
 
-// Project launch timestamp (used for time-based price accumulation)
-// 30 days ago from today as demo baseline
-export const PROJECT_EPOCH = Date.now() - (30 * 24 * 60 * 60 * 1000);
+// Project launch timestamp — 14 de abril 2025, 00:00:00 hora Ciudad de México (UTC-5)
+export const PROJECT_EPOCH = new Date('2025-04-14T00:00:00-05:00').getTime();
 
 export const corporations = [
   {
