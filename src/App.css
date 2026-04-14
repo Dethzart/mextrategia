@@ -267,8 +267,9 @@
   border: 1px solid var(--border);
   padding: 2px 6px;
 }
-.review-stars { color: var(--accent-yellow); font-size: 8px; letter-spacing: -0.5px; }
-.review-num   { color: var(--text-muted); font-weight: 500; font-size: 9px; }
+.review-stars     { color: var(--accent-yellow); font-size: 8px; letter-spacing: -0.5px; }
+.review-star-half { opacity: 0.4; }
+.review-num       { color: var(--text-muted); font-weight: 500; font-size: 9px; }
 
 .domain-price-col { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .domain-price {
@@ -1026,14 +1027,15 @@
   .counter-value      { font-size: clamp(11px, 3.2vw, 17px); }
   .counter-label      { font-size: 7px; }
 
-  /* Reviews mobile */
-  .domain-card    { flex-wrap: wrap; gap: 8px; }
-  .domain-info    { flex: 1 1 100%; }
+  /* Domain cards mobile */
+  .domain-card      { flex-wrap: wrap; gap: 8px; }
+  .domain-info      { flex: 1 1 100%; }
   .domain-price-col { flex: 1 1 100%; align-items: flex-start; text-align: left; }
-  .domain-reviews { flex-wrap: wrap; gap: 4px; }
-  .review-badge   { font-size: 9px; }
-  .review-stars   { font-size: 9px; }
-  .domain-price   { font-size: 14px; }
+  .domain-price     { font-size: 14px; }
+
+  /* Reviews mobile: apiladas verticalmente, sin número */
+  .domain-reviews   { flex-direction: column; align-items: flex-start; gap: 3px; margin-top: 4px; }
+  .review-num       { display: none; }
 
   .formula-panel   { grid-column: 1; }
   .comments-panel  { grid-column: 1; }

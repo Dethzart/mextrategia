@@ -62,10 +62,14 @@ function timeAgo(ts) {
 }
 
 function ReviewStars({ rating }) {
-  const full = Math.floor(rating), half = rating - full >= 0.5, empty = 5 - full - (half ? 1 : 0);
+  const full  = Math.floor(rating);
+  const half  = rating - full >= 0.5;
+  const empty = 5 - full - (half ? 1 : 0);
   return (
     <span className="review-stars" title={`${rating}/5`}>
-      {'★'.repeat(full)}{half ? '½' : ''}{'☆'.repeat(empty)}
+      {'★'.repeat(full)}
+      {half && <span className="review-star-half">★</span>}
+      {'☆'.repeat(empty)}
       <span className="review-num">{rating.toFixed(1)}</span>
     </span>
   );
