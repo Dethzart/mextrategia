@@ -406,15 +406,15 @@ export default function Dashboard() {
                   </a>
                 </div>
                 <div className="domain-sector">{corp.sector}</div>
-                <div className="domain-reviews">
-                  <span className="review-badge">Indeed <ReviewStars rating={corp.reviews.indeed} /></span>
-                  <span className="review-badge">Glassdoor <ReviewStars rating={corp.reviews.glassdoor} /></span>
-                </div>
               </div>
               <div className="domain-price-col">
                 <div className="domain-price">{formatMXN(price)}</div>
                 <div className="domain-rate">+{rate.toFixed(4)} MXN/seg</div>
                 <div className="domain-cap">CAP: {(corp.capRatio*100).toFixed(0)}% &nbsp;F: {corp.ethicsFactor} &nbsp;S: {S.toFixed(2)}</div>
+                <div className="domain-reviews">
+                  <span className="review-badge">Indeed <ReviewStars rating={corp.reviews.indeed} /></span>
+                  <span className="review-badge">Glassdoor <ReviewStars rating={corp.reviews.glassdoor} /></span>
+                </div>
               </div>
             </div>
           );

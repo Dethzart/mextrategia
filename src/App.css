@@ -9,11 +9,12 @@
   overflow-x: hidden;
 }
 
-/* ── Site Header ── */
+/* ── Site Header (topbar only — debajo del ticker) ── */
 .site-header {
   position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 50;
+  top: 28px; /* debajo del ticker */
+  left: 0; right: 0;
+  z-index: 200;
   transform: translateY(0);
   transition: transform 0.3s ease;
   background: var(--bg-primary);
@@ -122,9 +123,11 @@
 .mobile-menu button:hover  { color: var(--text-primary); }
 .mobile-menu button.active { color: var(--text-primary); border-left: 1px solid var(--text-primary); }
 
-/* ── Ticker ── */
+/* ── Ticker: siempre visible, fixed en la parte superior ── */
 .ticker-strip {
-  margin-top: 52px; /* espacio para el topbar fixed */
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 201; /* sobre el topbar */
   height: 28px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
@@ -147,6 +150,7 @@
 .main-content {
   flex: 1;
   padding: 32px;
+  padding-top: calc(28px + 52px + 32px); /* ticker + topbar + spacing */
 }
 
 /* ── Dashboard ── */
@@ -253,7 +257,13 @@
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
-.domain-reviews { display: flex; gap: 6px; margin-top: 5px; }
+.domain-reviews {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  margin-top: 6px;
+}
 .review-badge {
   display: inline-flex;
   align-items: center;
@@ -1008,8 +1018,7 @@
   .topbar { padding: 0 16px; height: 48px; }
   .topbar-logo { font-size: 10px; letter-spacing: 3px; }
 
-  .ticker-strip  { margin-top: 48px; }
-  .main-content  { padding: 16px; }
+  .main-content { padding: 16px; padding-top: calc(28px + 48px + 16px); } /* ticker + topbar + spacing */
 
   .dashboard { grid-template-columns: 1fr; }
 
@@ -1024,9 +1033,7 @@
   .counter-value      { font-size: clamp(11px, 3.2vw, 17px); }
   .counter-label      { font-size: 7px; }
 
-  /* Reviews mobile: apiladas a la derecha, sin número */
-  .domain-reviews { flex-direction: column; align-items: flex-end; gap: 3px; margin-top: 4px; }
-  .review-num     { display: none; }
+  .review-num { display: none; }
 
   .formula-panel   { grid-column: 1; }
   .comments-panel  { grid-column: 1; }

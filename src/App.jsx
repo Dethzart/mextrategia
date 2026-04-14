@@ -99,7 +99,10 @@ export default function App() {
   return (
     <div className="app">
 
-      {/* ── Sticky Header ── */}
+      {/* ── Ticker: siempre visible, fixed en la parte superior ── */}
+      <TickerStrip />
+
+      {/* ── Topbar: fixed debajo del ticker, se oculta al bajar ── */}
       <div className={`site-header${headerHidden ? ' site-header--hidden' : ''}`}>
         <div className="topbar">
           <div className="topbar-logo" onClick={() => goTo('/manifiesto')}>
@@ -149,9 +152,6 @@ export default function App() {
         </div>
 
       </div>
-
-      {/* ── Ticker: flujo normal, sube con el scroll ── */}
-      <TickerStrip />
 
       {/* ── Content ── */}
       <div className="main-content">
