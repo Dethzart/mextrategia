@@ -89,8 +89,7 @@ export default function Gallery() {
         <div className="gallery-eyebrow">Galería de Obras</div>
         <h1 className="gallery-title">Intervenciones</h1>
         <p className="gallery-subtitle">
-          Cada dominio intervenido es una galer&iacute;a.<br />
-          Cinco a diez artistas por territorio. El precio crece mientras la empresa no act&uacute;a.
+          Cada dominio intervenido es una galer&iacute;a.
         </p>
       </div>
 
