@@ -8,18 +8,14 @@ export default function Status() {
       <div className="status-header">
         <div className="status-eyebrow">Estado del Proyecto &mdash; V1</div>
         <h1 className="status-title">
-          MextrategIA:<br />
+          MEXTRATEGIA:<br />
           <em>C&oacute;mo funciona</em>
         </h1>
-        <div className="status-meta">
-          mextrategia.art &mdash; Net-Art / Cr&iacute;tica Financiera &mdash; 2025
-        </div>
       </div>
 
       {/* ── Qué es ── */}
       <section className="status-section">
         <div className="status-section-label">01 &mdash; Concepto</div>
-        <h2 className="status-section-title">Qu&eacute; es MextrategIA</h2>
         <p>
           MextrategIA es un dispositivo de net-art que adquiri&oacute; los dominios <strong>.ai</strong> de
           los grandes corporativos mexicanos que han evadido la transformaci&oacute;n digital y la
@@ -42,7 +38,6 @@ export default function Status() {
       {/* ── Cómo funciona ── */}
       <section className="status-section">
         <div className="status-section-label">02 &mdash; Sistema</div>
-        <h2 className="status-section-title">C&oacute;mo funciona el sistema</h2>
         <p>
           El sitio opera como una obra en tiempo real. Desde el momento en que el proyecto fue
           lanzado, un reloj interno acumula el precio de cada dominio segundo a segundo.
@@ -91,7 +86,6 @@ export default function Status() {
       {/* ── La Fórmula ── */}
       <section className="status-section">
         <div className="status-section-label">03 &mdash; F&oacute;rmula</div>
-        <h2 className="status-section-title">La F&oacute;rmula de Castigo Global</h2>
         <p>
           El precio de cada dominio no responde a la oferta y la demanda. Responde a variables
           que miden el da&ntilde;o acumulado. &Eacute;sta es la f&oacute;rmula central de la obra:
@@ -193,7 +187,6 @@ export default function Status() {
       {/* ── Estado V1 ── */}
       <section className="status-section">
         <div className="status-section-label">04 &mdash; V1</div>
-        <h2 className="status-section-title">Estado actual del proyecto</h2>
 
         <div className="status-items">
           <div className="status-item status-item--done">
