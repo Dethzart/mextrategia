@@ -72,7 +72,7 @@ function ReviewStars({ rating }) {
 }
 
 // ── Human Verification Modal ──────────────────────────────────
-function ChallengeModal({ onVerified }) {
+function ChallengeModal({ onVerified, onClose }) {
   const [ch,    setCh]    = useState(makeChallenge);
   const [input, setInput] = useState('');
   const [error, setError] = useState(false);
@@ -91,6 +91,7 @@ function ChallengeModal({ onVerified }) {
   return (
     <div className="challenge-overlay">
       <div className="challenge-modal">
+        <button className="challenge-close" onClick={onClose} aria-label="Cerrar">&times;</button>
         <div className="challenge-eyebrow">Verificación de presencia humana</div>
         <h2 className="challenge-title">La participación requiere presencia.</h2>
         <p className="challenge-desc">
@@ -341,7 +342,12 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
 
-      {showChallenge && <ChallengeModal onVerified={onVerified} />}
+      {showChallenge && (
+        <ChallengeModal
+          onVerified={onVerified}
+          onClose={() => { setShowChallenge(false); setPendingAction(null); }}
+        />
+      )}
 
       {/* ── Global Counter ── */}
       <div className="global-counter">

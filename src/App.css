@@ -287,6 +287,14 @@
   color: var(--text-muted);
 }
 
+/* ── Dashboard loading ── */
+.dashboard-loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 80px 24px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase;
+}
+
 /* ── Voting + Sentiment combined ── */
 .voting-description {
   font-family: var(--font-sans);
@@ -615,11 +623,22 @@
   backdrop-filter: blur(6px);
 }
 .challenge-modal {
+  position: relative;
   background: var(--bg-panel);
   border: 1px solid var(--border-accent);
   max-width: 480px; width: 100%;
   padding: 40px;
 }
+.challenge-close {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none;
+  font-size: 20px; line-height: 1;
+  color: var(--text-muted); cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+.challenge-close:hover { color: var(--text-primary); }
+
 .challenge-eyebrow {
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   color: var(--accent-orange); margin-bottom: 14px;
