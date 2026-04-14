@@ -1034,7 +1034,7 @@
   .domain-price     { font-size: 14px; }
 
   /* Reviews mobile: apiladas verticalmente, sin número */
-  .domain-reviews   { flex-direction: column; align-items: flex-start; gap: 3px; margin-top: 4px; }
+  .domain-reviews   { flex-direction: column; align-items: flex-end; gap: 3px; margin-top: 4px; }
   .review-num       { display: none; }
 
   .formula-panel   { grid-column: 1; }
