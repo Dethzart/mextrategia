@@ -117,7 +117,7 @@ export default function App() {
       {/* ── Topbar: fixed debajo del ticker, se oculta al bajar ── */}
       <div className={`site-header${headerHidden ? ' site-header--hidden' : ''}`}>
         <div className="topbar">
-          <div className="topbar-logo" onClick={() => goTo('/manifiesto')}>
+          <div className="topbar-logo" onClick={() => goTo('/panel')}>
             MEXTRATEGIA
           </div>
 
