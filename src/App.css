@@ -201,7 +201,7 @@
 .global-counter {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   background: var(--bg-panel);
   border: 1px solid var(--border);
 }
@@ -1029,14 +1029,14 @@
 
   .dashboard { grid-template-columns: 1fr; }
 
-  .global-counter { grid-template-columns: repeat(3, 1fr); }
+  .global-counter { grid-template-columns: repeat(2, 1fr); }
   .counter-block {
     padding: 16px 8px;
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
   }
-  .counter-block:nth-child(3n)       { border-right: none; }
-  .counter-block:nth-last-child(-n+3) { border-bottom: none; }
+  .counter-block:nth-child(2n)       { border-right: none; }
+  .counter-block:nth-last-child(-n+2) { border-bottom: none; }
   .counter-value      { font-size: clamp(11px, 3.2vw, 17px); }
   .counter-label      { font-size: 7px; }
 
