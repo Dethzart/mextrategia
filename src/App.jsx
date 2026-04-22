@@ -5,26 +5,19 @@ import Dashboard from './components/Dashboard';
 import Manifesto from './components/Manifesto';
 import Gallery from './components/Gallery';
 import Status from './components/Status';
+import { supabase } from './lib/supabase';
 import {
   corporations,
-  calculatePrice,
-  calculateRate,
-  calculateTotalDebt,
+  calculatePriceWithVotes,
+  calculateRateWithVotes,
   formatMXN,
 } from './data/corporations';
 
-function TickerStrip() {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 500);
-    return () => clearInterval(t);
-  }, []);
-
+function TickerStrip({ dbVotes, now }) {
   const items = corporations.map(corp => ({
     domain: corp.domain,
-    price:  formatMXN(calculatePrice(corp, now)),
-    rate:   `+${calculateRate(corp).toFixed(4)}/s`,
+    price:  formatMXN(calculatePriceWithVotes(corp, dbVotes[corp.id] || 0, now)),
+    rate:   `+${calculateRateWithVotes(corp, dbVotes[corp.id] || 0).toFixed(4)}/s`,
   }));
   const doubled = [...items, ...items];
 
@@ -43,7 +36,6 @@ function TickerStrip() {
   );
 }
 
-// UTC offset de Ciudad de México (CDT/CST según temporada)
 function getMXOffset() {
   try {
     const s = new Date().toLocaleString('en', { timeZone: 'America/Mexico_City', timeZoneName: 'shortOffset' });
@@ -56,14 +48,16 @@ const MX_OFFSET = getMXOffset();
 
 const routes = [
   // { path: '/manifiesto', label: 'Manifiesto', component: <Manifesto /> }, // V2
-  { path: '/panel',      label: 'Panel',        component: <Dashboard /> },
-  { path: '/galeria',    label: 'Galería',       component: <Gallery />   },
-  // { path: '/estado',  label: 'Estado',        component: <Status />    }, // V2
+  { path: '/panel',   label: 'Panel',   },
+  { path: '/galeria', label: 'Galería', },
+  // { path: '/estado', label: 'Estado', }, // V2
 ];
 
 export default function App() {
   const navigate     = useNavigate();
   const location     = useLocation();
+  const [now,          setNow]          = useState(Date.now());
+  const [dbVotes,      setDbVotes]      = useState({});
   const [menuOpen,     setMenuOpen]     = useState(false);
   const [time,         setTime]         = useState(new Date());
   const [headerHidden, setHeaderHidden] = useState(false);
@@ -72,12 +66,42 @@ export default function App() {
 
   const currentPath = location.pathname;
 
+  // Ticker clock
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 500);
+    return () => clearInterval(t);
+  }, []);
+
+  // Topbar clock
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
 
-  // Scroll al inicio al cambiar de ruta
+  // Votes — fuente única de verdad para ticker y dashboard
+  useEffect(() => {
+    async function loadVotes() {
+      const { data: votes } = await supabase.from('votes').select('corp_id');
+      const counts = {};
+      corporations.forEach(c => { counts[c.id] = 0; });
+      votes?.forEach(v => { counts[v.corp_id] = (counts[v.corp_id] || 0) + 1; });
+      setDbVotes(counts);
+    }
+    loadVotes();
+
+    const channel = supabase.channel('app-votes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, async () => {
+        const { data: votes } = await supabase.from('votes').select('corp_id');
+        const counts = {};
+        corporations.forEach(c => { counts[c.id] = 0; });
+        votes?.forEach(v => { counts[v.corp_id] = (counts[v.corp_id] || 0) + 1; });
+        setDbVotes(counts);
+      })
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  }, []);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
     setHeaderHidden(false);
@@ -111,17 +135,14 @@ export default function App() {
   return (
     <div className="app">
 
-      {/* ── Ticker: siempre visible, fixed en la parte superior ── */}
-      <TickerStrip />
+      <TickerStrip dbVotes={dbVotes} now={now} />
 
-      {/* ── Topbar: fixed debajo del ticker, se oculta al bajar ── */}
       <div className={`site-header${headerHidden ? ' site-header--hidden' : ''}`}>
         <div className="topbar">
           <div className="topbar-logo" onClick={() => goTo('/panel')}>
             MEXTRATEGIA
           </div>
 
-          {/* Desktop nav */}
           <nav className="topbar-nav desktop-nav">
             {routes.map(r => (
               <button
@@ -163,21 +184,18 @@ export default function App() {
             </div>
           </div>
         </div>
-
       </div>
 
-      {/* ── Content ── */}
       <div className="main-content">
         <Routes>
           <Route path="/manifiesto" element={<Manifesto />} />
-          <Route path="/panel"      element={<Dashboard />} />
-          <Route path="/galeria"    element={<Gallery />}   />
-          <Route path="/estado"     element={<Status />}    />
+          <Route path="/panel"      element={<Dashboard dbVotes={dbVotes} setDbVotes={setDbVotes} />} />
+          <Route path="/galeria"    element={<Gallery />} />
+          <Route path="/estado"     element={<Status />} />
           <Route path="*"           element={<Navigate to="/panel" replace />} />
         </Routes>
       </div>
 
-      {/* ── Footer ── */}
       <footer className="app-footer">
         <div className="footer-left">
           <span><span className="status-dot" />LIVE</span>

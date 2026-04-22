@@ -94,9 +94,8 @@ function ChallengeModal({ onVerified, onClose }) {
   );
 }
 
-export default function Dashboard() {
+export default function Dashboard({ dbVotes, setDbVotes }) {
   const [now,           setNow]          = useState(Date.now());
-  const [dbVotes,       setDbVotes]      = useState({});
   const [votedCorp,     setVotedCorp]    = useState(null);
   const [recentVote,    setRecentVote]   = useState(null);
   const [loading,       setLoading]      = useState(true);
@@ -112,34 +111,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     const uid = userId.current;
-
-    async function loadData() {
-      const { data: votes } = await supabase.from('votes').select('corp_id, user_id');
-      const counts = {};
-      corporations.forEach(c => { counts[c.id] = 0; });
-      votes?.forEach(v => { counts[v.corp_id] = (counts[v.corp_id] || 0) + 1; });
-      setDbVotes(counts);
-      const myVote = votes?.find(v => v.user_id === uid);
-      setVotedCorp(myVote?.corp_id || null);
+    async function loadUserVote() {
+      const { data: votes } = await supabase
+        .from('votes')
+        .select('corp_id')
+        .eq('user_id', uid)
+        .maybeSingle();
+      setVotedCorp(votes?.corp_id || null);
       setLoading(false);
     }
-
-    loadData();
-
-    const channel = supabase.channel('dashboard')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'votes' },
-        async () => {
-          const { data: votes } = await supabase.from('votes').select('corp_id');
-          const counts = {};
-          corporations.forEach(c => { counts[c.id] = 0; });
-          votes?.forEach(v => { counts[v.corp_id] = (counts[v.corp_id] || 0) + 1; });
-          setDbVotes(counts);
-        }
-      )
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
+    loadUserVote();
   }, []);
 
   const getDB      = (corpId) => dbVotes[corpId] || 0;
@@ -280,7 +261,7 @@ export default function Dashboard() {
         </div>
 
         <div className="ranking-description">
-          Un voto por persona, a un solo dominio. Los votos amplifican F<sub>i</sub>&nbsp;=&nbsp;V&nbsp;&times;&nbsp;S.
+          Un voto por persona, a un solo dominio. Los votos amplifican el precio vía F<sub>i</sub>&nbsp;=&nbsp;1&nbsp;+&nbsp;log<sub>10</sub>(1&nbsp;+&nbsp;V/100).
         </div>
 
         <div className="ranking-list">
@@ -353,19 +334,19 @@ export default function Dashboard() {
         <div className="formula-vars">
           <div className="formula-var">
             <span className="formula-var-name">0.01 MXN/seg</span>
-            <span className="formula-var-desc">Tasa base — acumulación por segundo de inacción</span>
+            <span className="formula-var-desc">Tasa base de acumulación. Cada segundo que la empresa no digitaliza su dominio, el precio aumenta — el tiempo inactivo tiene costo.</span>
           </div>
           <div className="formula-var">
             <span className="formula-var-name">CAP<sub>Act</sub>/CAP<sub>M&aacute;x</sub></span>
-            <span className="formula-var-desc">Indicador bursátil vs. máximo histórico</span>
+            <span className="formula-var-desc">Proporción entre la capitalización bursátil actual y su máximo histórico. Refleja cuánto valor de mercado ha destruido la empresa respecto a su mejor momento.</span>
           </div>
           <div className="formula-var">
             <span className="formula-var-name">F<sub>factor</sub></span>
-            <span className="formula-var-desc">Factor ético — calificaciones Indeed/Glassdoor</span>
+            <span className="formula-var-desc">Factor ético derivado de las calificaciones promedio en Indeed y Glassdoor. Empresas con peores condiciones laborales acumulan precio más rápido.</span>
           </div>
           <div className="formula-var">
             <span className="formula-var-name">F<sub>i</sub> = 1 + log<sub>10</sub>(1 + V/100)</span>
-            <span className="formula-var-desc">Amplificador de votos — escala logarítmica</span>
+            <span className="formula-var-desc">Amplificador ciudadano. Cada voto incrementa F<sub>i</sub> en escala logarítmica: los primeros votos tienen mayor impacto, los siguientes son decrecientes. Sin votos, F<sub>i</sub> = 1 y el tiempo sigue acumulando castigo por sí solo.</span>
           </div>
         </div>
         <div className="formula-rates">
