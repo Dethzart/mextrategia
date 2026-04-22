@@ -37,19 +37,25 @@ function SignalCanvas() {
     window.addEventListener('resize', resize);
     resize();
 
+    // Stable noise — valid float RNG without JS overflow
+    function noise1d(x) {
+      const s = Math.sin(x * 127.1) * 43758.5453;
+      return s - Math.floor(s);
+    }
+
     function draw() {
       const w = canvas.width;
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
-      t += 0.008;
+      t += 0.006;
 
-      const WAVES    = 5;
-      const padX     = w * 0.06;
-      const padY     = h * 0.12;
-      const usableH  = h - padY * 2;
-      const waveH    = usableH / WAVES;
+      const WAVES   = 5;
+      const padX    = w * 0.06;
+      const padY    = h * 0.10;
+      const usableH = h - padY * 2;
+      const waveH   = usableH / WAVES;
 
-      // Current data position (cycles through years)
+      // Cycle through years
       const cyclePos = t % N;
       const idxA     = Math.floor(cyclePos) % N;
       const idxB     = (idxA + 1) % N;
@@ -57,66 +63,65 @@ function SignalCanvas() {
       const curLines = LINES_DATA[idxA].lines * (1 - blend) + LINES_DATA[idxB].lines * blend;
       const curYear  = LINES_DATA[idxA].year;
 
-      // Degradation: noise increases as lines drop
-      const intactRatio    = curLines / LINES_MAX;
-      const noiseAmplitude = (1 - intactRatio) * 0.85;
-      const freqDrift      = 1 + (1 - intactRatio) * 3.5;
+      const intactRatio = curLines / LINES_MAX;          // 0.42–1.0
+      const corruption  = 1 - intactRatio;               // 0–0.58
+      const freqDrift   = 1 + corruption * 2.5;
 
       for (let wi = 0; wi < WAVES; wi++) {
         const baseY      = padY + wi * waveH + waveH * 0.5;
-        const amplitude  = waveH * 0.32 * intactRatio;
-        const freq       = (0.018 + wi * 0.004) * freqDrift;
-        const phaseShift = wi * 1.1 + t * (0.6 + wi * 0.08);
+        // Minimum amplitude floor — always visible, grows toward peak
+        const amplitude  = waveH * (0.18 + 0.22 * intactRatio);
+        const freq       = (0.016 + wi * 0.005) * freqDrift;
+        const phaseShift = wi * 1.3 + t * (0.55 + wi * 0.09);
 
-        // Signal quality varies per wave
-        const waveIntact = Math.max(0, intactRatio - wi * 0.04);
-        const waveNoise  = noiseAmplitude + wi * 0.06;
+        // Each wave degrades slightly more than the previous
+        const waveCorrupt = Math.min(1, corruption + wi * 0.06);
+        const waveIntact  = 1 - waveCorrupt;
 
+        const steps = Math.min(Math.floor(w / 1.5), 600);
         ctx.beginPath();
-        const steps = Math.floor(w / 2);
+
         for (let i = 0; i <= steps; i++) {
-          const x   = padX + (i / steps) * (w - padX * 2);
-          const px  = i / steps;
+          const px = i / steps;
+          const x  = padX + px * (w - padX * 2);
 
-          // Clean sine component
-          const sine    = Math.sin(px * Math.PI * 2 * freq * (w / 100) + phaseShift) * amplitude;
+          // Base sine
+          const sine = Math.sin(px * Math.PI * 2 * freq * (w / 80) + phaseShift) * amplitude;
 
-          // Noise injection — increases with degradation
-          const seed    = (i + wi * 1000 + Math.floor(t * 8)) * 6364136223846793005;
-          const pseudo  = ((seed ^ (seed >> 33)) * 1442695040888963407) / 2 ** 53;
-          const noise   = (pseudo * 2 - 1) * waveH * waveNoise * 0.22;
+          // Two layers of noise — deterministic so no flicker
+          const n1 = (noise1d(px * 31.7 + wi * 5.1 + Math.floor(t * 4) * 0.17) * 2 - 1);
+          const n2 = (noise1d(px * 73.1 + wi * 9.3 + Math.floor(t * 7) * 0.11) * 2 - 1);
+          const noiseAmt = waveH * waveCorrupt * (n1 * 0.28 + n2 * 0.12);
 
-          // Dropout segments — signal goes flat/random at high degradation
-          const dropout = waveNoise > 0.4 && Math.sin(px * 17 + t + wi) > 0.7 - waveNoise * 0.5;
-          const y       = baseY + (dropout ? noise * 0.6 : sine + noise * 0.3);
+          // Dropout: random horizontal segments clipped to baseY — CRT style
+          const dropThresh = 0.55 + waveIntact * 0.45;
+          const dropout    = noise1d(px * 11.3 + wi * 2.7 + Math.floor(t * 3) * 0.13) > dropThresh;
+          const y          = baseY + (dropout ? noiseAmt * 0.5 : sine + noiseAmt * 0.35);
 
           i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
 
-        const alpha     = 0.15 + waveIntact * 0.65;
-        const goldRatio = waveIntact;
-        const r = Math.round(201 * goldRatio + 40 * (1 - goldRatio));
-        const g = Math.round(168 * goldRatio + 40 * (1 - goldRatio));
-        const b = Math.round(76  * goldRatio + 60 * (1 - goldRatio));
+        // Color: gold at peak, shifts to grey-green static at full corruption
+        const r = Math.round(201 * waveIntact + 50 * waveCorrupt);
+        const g = Math.round(168 * waveIntact + 80 * waveCorrupt);
+        const b = Math.round(76  * waveIntact + 60 * waveCorrupt);
+        // Alpha has a higher floor so wave is always legible
+        const alpha = 0.30 + waveIntact * 0.55;
         ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
-        ctx.lineWidth   = 1.2 * (0.5 + waveIntact * 0.5);
+        ctx.lineWidth   = 1 + waveIntact * 0.8;
         ctx.stroke();
       }
 
-      // Year and lines label
-      ctx.fillStyle = 'rgba(201,168,76,0.38)';
+      // Year / lines label
+      ctx.fillStyle = 'rgba(201,168,76,0.40)';
       ctx.font      = `${Math.max(10, w * 0.012)}px 'Courier New', monospace`;
       ctx.textAlign = 'center';
-      ctx.fillText(
-        `${curYear} — ${curLines.toFixed(1)}M LÍNEAS FIJAS`,
-        w / 2,
-        h - padY * 0.45,
-      );
+      ctx.fillText(`${curYear} — ${curLines.toFixed(1)}M LÍNEAS FIJAS`, w / 2, h - padY * 0.5);
 
-      // Signal degradation label
-      if (intactRatio < 0.85) {
-        const lostPct = Math.round((1 - intactRatio) * 100);
-        ctx.fillStyle = `rgba(201,168,76,${0.08 + 0.07 * Math.sin(t * 2.5)})`;
+      // Degradation label
+      if (intactRatio < 0.95) {
+        const lostPct = Math.round(corruption * 100);
+        ctx.fillStyle = `rgba(201,168,76,${0.12 + 0.10 * Math.sin(t * 2.5)})`;
         ctx.font      = `${Math.max(8, w * 0.009)}px 'Courier New', monospace`;
         ctx.fillText(`señal degradada ${lostPct}%`, w / 2, h - padY * 0.12);
       }
