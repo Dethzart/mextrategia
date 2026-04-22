@@ -1,12 +1,15 @@
 import GenommaLab from './GenommaLab';
-import Placeholder from './Placeholder';
+import Cinepolis  from './Cinepolis';
+import Cinemex    from './Cinemex';
+import Telmex     from './Telmex';
+import Inbursa    from './Inbursa';
 
 const ARTWORKS = {
-  'genommalab.ai':  () => <GenommaLab />,
-  'cinepolis.ai':   () => <Placeholder corpId="cinepolis" domain="cinepolis.ai"  lot="LOT-CNP-001" />,
-  'cinemex.ai':     () => <Placeholder corpId="cinemex"   domain="cinemex.ai"   lot="LOT-CMX-001" />,
-  'telmex.ai':      () => <Placeholder corpId="telmex"    domain="telmex.ai"    lot="LOT-TLX-001" />,
-  'inbursa.ai':     () => <Placeholder corpId="inbursa"   domain="inbursa.ai"   lot="LOT-INB-001" />,
+  'genommalab.ai': () => <GenommaLab />,
+  'cinepolis.ai':  () => <Cinepolis />,
+  'cinemex.ai':    () => <Cinemex />,
+  'telmex.ai':     () => <Telmex />,
+  'inbursa.ai':    () => <Inbursa />,
 };
 
 export function getArtwork(hostname) {
