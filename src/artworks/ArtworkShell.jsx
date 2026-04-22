@@ -31,32 +31,58 @@ function useDomainPrice(corpId) {
 
 export default function ArtworkShell({ corpId, domain, children, caption }) {
   const { price, rate } = useDomainPrice(corpId);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="artwork-root">
+      {/* ── Banner ── */}
       <div className="artwork-banner">
+        <a
+          className="artwork-banner-back"
+          href="https://mextrategia.art"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          ← MEX
+        </a>
+
         <span className="artwork-banner-domain">{domain.toUpperCase()}</span>
         <span className="artwork-banner-sep">—</span>
-        <span className="artwork-banner-label">VALOR:</span>
+        <span className="artwork-banner-label">VALOR</span>
         <span className="artwork-banner-price">{formatMXN(price)}</span>
-        <span className="artwork-banner-sep">—</span>
+        <span className="artwork-banner-sep hide-mobile">—</span>
         <span className="artwork-banner-rate">+{rate.toFixed(4)} MXN/SEG</span>
-        <span className="artwork-banner-sep">—</span>
+
+        <span className="artwork-banner-spacer" />
+
         <span className="artwork-banner-live">
           <span className="artwork-banner-dot" />
           LIVE
         </span>
       </div>
 
+      {/* ── Canvas ── */}
       <div className="artwork-canvas-area">
         {children}
       </div>
 
+      {/* ── Caption ── */}
       {caption && (
-        <div className="artwork-caption">
+        <div className={`artwork-caption${collapsed ? ' is-collapsed' : ''}`}>
           <div className="artwork-caption-inner">
+            <button
+              className="artwork-caption-toggle"
+              onClick={() => setCollapsed(c => !c)}
+              aria-label={collapsed ? 'Mostrar descripción' : 'Ocultar descripción'}
+            >
+              <span className="artwork-caption-toggle-arrow">▲</span>
+              {collapsed ? 'VER OBRA' : 'OCULTAR'}
+            </button>
+
             <div className="artwork-caption-title">{caption.title}</div>
-            <div className="artwork-caption-artist">{caption.artist}, {caption.year} — {caption.medium}</div>
+            <div className="artwork-caption-artist">
+              {caption.artist}, {caption.year} — {caption.medium}
+            </div>
             <div className="artwork-caption-lot">{caption.lot} — {domain}</div>
             <p className="artwork-caption-desc">{caption.description}</p>
             <a

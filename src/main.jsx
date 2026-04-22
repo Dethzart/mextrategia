@@ -6,7 +6,8 @@ import App from './App.jsx'
 import { getArtwork } from './artworks/index.jsx'
 
 const hostname  = window.location.hostname.replace(/^www\./, '');
-const Artwork   = getArtwork(hostname);
+const previewDomain = new URLSearchParams(window.location.search).get('preview');
+const Artwork   = getArtwork(previewDomain || hostname);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -789,7 +789,7 @@
 .colophon-refs { font-size: 10px !important; line-height: 1.9 !important; margin-top: 12px !important; color: var(--text-muted) !important; }
 
 /* ── Gallery ── */
-.gallery { max-width: 1100px; margin: 0 auto; padding: 56px 24px; }
+.gallery { max-width: 1200px; margin: 0 auto; padding: 56px 24px; }
 
 .gallery-header { margin-bottom: 48px; }
 .gallery-eyebrow {
@@ -807,84 +807,129 @@
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1px;
   background: var(--border);
 }
 
-.gallery-card { background: var(--bg-panel); }
-.gallery-card--placeholder .gallery-card-body { opacity: 0.5; }
-
-.gallery-visual {
-  height: 220px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  overflow: hidden;
-}
-.gallery-visual--real {
+.gallery-card {
+  background: var(--bg-panel);
+  display: flex;
   flex-direction: column;
-  gap: 8px;
-  background: var(--bg-secondary);
-}
-.gallery-visual-domain {
-  font-family: var(--font-mono); font-size: 13px; color: var(--text-primary); letter-spacing: 1px;
-}
-.gallery-visual-label {
-  font-family: var(--font-mono); font-size: 9px; color: var(--accent-orange);
-  letter-spacing: 2px; text-transform: uppercase;
-}
-.gallery-visual--placeholder { background: var(--bg-secondary); }
-.gallery-visual-num {
-  font-family: var(--font-mono); font-size: 72px; font-weight: 400;
-  color: var(--border-accent); line-height: 1; user-select: none;
 }
 
-.gallery-card-body { padding: 20px; }
-.gallery-card-domain {
-  font-family: var(--font-mono); font-size: 10px; color: var(--accent-orange);
-  letter-spacing: 1.5px; margin-bottom: 8px;
+/* Thumbnail visual area */
+.gallery-visual {
+  position: relative;
+  display: block;
+  height: 240px;
+  background: #060608;
+  overflow: hidden;
+  text-decoration: none;
+  flex-shrink: 0;
 }
+
+.gallery-thumb-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-visual-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(6,6,8,0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s, background 0.25s;
+}
+.gallery-visual-visit {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #c9a84c;
+  border: 1px solid rgba(201,168,76,0.5);
+  padding: 8px 20px;
+}
+.gallery-visual:hover .gallery-visual-overlay {
+  opacity: 1;
+  background: rgba(6,6,8,0.55);
+}
+
+/* Card body */
+.gallery-card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.gallery-card-lot {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+}
+.gallery-card-status {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--accent-green);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.gallery-card-domain-link {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-orange);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.gallery-card-domain-link:hover { opacity: 0.7; }
 .gallery-card-title {
-  font-family: var(--font-sans); font-size: 16px; font-weight: 500;
-  color: var(--text-primary); margin-bottom: 4px;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
 }
 .gallery-card-artist {
-  font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
-  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
 }
 .gallery-card-desc {
-  font-family: var(--font-sans); font-size: 12px; color: var(--text-secondary); line-height: 1.65;
-  margin-bottom: 12px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.68;
+  margin-bottom: 14px;
+  flex: 1;
 }
 .gallery-card-medium {
-  font-family: var(--font-mono); font-size: 9px; color: var(--text-muted); letter-spacing: 0.5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
   font-style: italic;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
-.gallery-card-pending {
-  font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: 1px;
-}
-
-.gallery-card-footer {
-  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
-  padding: 12px 20px; border-top: 1px solid var(--border); font-size: 9px;
-}
-
-.gallery-visit-btn {
-  font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--accent-orange); border: 1px solid var(--accent-orange);
-  padding: 4px 12px; text-decoration: none;
-  transition: background 0.15s, color 0.15s;
-  white-space: nowrap;
-}
-.gallery-visit-btn:hover { background: var(--accent-orange); color: var(--bg-panel); opacity: 1; }
-.gallery-visit-btn--pending {
-  color: var(--text-muted); border-color: var(--border);
-  pointer-events: none; opacity: 0.45;
-}
-.gallery-card-lot { font-family: var(--font-mono); color: var(--text-muted); letter-spacing: 1.5px; }
-.gallery-card-status--activo   { font-family: var(--font-mono); color: var(--accent-green); letter-spacing: 1.5px; text-transform: uppercase; font-size: 9px; }
-.gallery-card-status--pendiente { font-family: var(--font-mono); color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase; font-size: 9px; }
 
 /* ── Status Page ── */
 .status-page { max-width: 780px; margin: 0 auto; padding: 56px 24px; }
@@ -1095,6 +1140,9 @@
   .gallery { padding: 32px 16px; }
   .gallery-title { font-size: 30px; }
   .gallery-grid { grid-template-columns: 1fr; }
+  .gallery-visual { height: 200px; }
+  .gallery-card-title { font-size: 15px; }
+  .gallery-card-desc  { font-size: 11px; }
 
   .status-page { padding: 32px 16px; }
   .status-title { font-size: 28px; }

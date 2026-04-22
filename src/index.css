@@ -78,40 +78,67 @@ a:hover { opacity: 0.55; }
   position: relative;
 }
 
+/* ── Banner ── */
 .artwork-banner {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 20px;
-  height: 40px;
+  gap: 8px;
+  padding: 0 16px;
+  height: 44px;
   background: #0d0d10;
-  border-bottom: 1px solid rgba(201,168,76,0.25);
+  border-bottom: 1px solid rgba(201,168,76,0.2);
   font-size: 11px;
-  letter-spacing: 0.08em;
-  white-space: nowrap;
+  letter-spacing: 0.07em;
   overflow: hidden;
 }
 
-.artwork-banner-domain { color: #c9a84c; font-weight: bold; letter-spacing: 0.12em; }
-.artwork-banner-sep    { color: rgba(255,255,255,0.3); }
-.artwork-banner-label  { color: rgba(255,255,255,0.35); }
-.artwork-banner-price  { color: #c9a84c; font-weight: bold; min-width: 130px; font-size: 12px; }
-.artwork-banner-rate   { color: rgba(255,255,255,0.35); font-size: 10px; }
-.artwork-banner-live   { display: flex; align-items: center; gap: 5px; color: rgba(255,255,255,0.35); font-size: 10px; margin-left: auto; }
+.artwork-banner-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  padding-right: 10px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  margin-right: 2px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.artwork-banner-back:hover { color: #c9a84c; opacity: 1; }
+
+.artwork-banner-domain { color: #c9a84c; font-weight: bold; letter-spacing: 0.12em; flex-shrink: 0; }
+.artwork-banner-sep    { color: rgba(255,255,255,0.2); flex-shrink: 0; }
+.artwork-banner-label  { color: rgba(255,255,255,0.3); flex-shrink: 0; }
+.artwork-banner-price  {
+  color: #c9a84c; font-weight: bold; font-size: 12px;
+  flex-shrink: 0; min-width: 0;
+  font-variant-numeric: tabular-nums;
+}
+.artwork-banner-rate   { color: rgba(255,255,255,0.3); font-size: 10px; flex-shrink: 0; }
+.artwork-banner-spacer { flex: 1; }
+.artwork-banner-live   {
+  display: flex; align-items: center; gap: 5px;
+  color: rgba(255,255,255,0.3); font-size: 10px;
+  flex-shrink: 0;
+}
 .artwork-banner-dot    {
   width: 6px; height: 6px; border-radius: 50%; background: #c9a84c;
   animation: artwork-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
 }
 @keyframes artwork-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
+/* ── Canvas ── */
 .artwork-canvas-area {
   position: fixed;
-  top: 40px; left: 0;
+  top: 44px; left: 0;
   width: 100vw;
-  height: calc(100vh - 40px);
+  height: calc(100vh - 44px);
 }
 
 .artwork-canvas {
@@ -120,34 +147,62 @@ a:hover { opacity: 0.55; }
   height: 100%;
 }
 
+/* ── Caption ── */
 .artwork-caption {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 50;
-  background: linear-gradient(transparent, rgba(6,6,8,0.88) 30%);
-  padding: 40px 0 28px;
+  background: linear-gradient(transparent, rgba(6,6,8,0.92) 28%);
+  padding: 48px 0 24px;
   pointer-events: none;
+  transition: transform 0.35s ease;
+}
+
+.artwork-caption.is-collapsed {
+  transform: translateY(calc(100% - 52px));
 }
 
 .artwork-caption-inner {
-  max-width: 600px;
+  max-width: 580px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 20px;
   pointer-events: all;
 }
 
+.artwork-caption-toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0 14px;
+  color: rgba(201,168,76,0.6);
+  font-family: 'Courier New', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.artwork-caption-toggle-arrow {
+  display: inline-block;
+  transition: transform 0.3s;
+}
+.artwork-caption.is-collapsed .artwork-caption-toggle-arrow {
+  transform: rotate(180deg);
+}
+
 .artwork-caption-title  { font-size: 14px; font-weight: bold; color: #c9a84c; letter-spacing: 0.08em; margin-bottom: 4px; }
-.artwork-caption-artist { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; margin-bottom: 2px; }
-.artwork-caption-lot    { font-size: 9px; color: rgba(201,168,76,0.4); letter-spacing: 0.1em; margin-bottom: 10px; }
-.artwork-caption-desc   { font-size: 11px; line-height: 1.65; color: rgba(255,255,255,0.35); margin-bottom: 12px; }
+.artwork-caption-artist { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 0.06em; margin-bottom: 2px; }
+.artwork-caption-lot    { font-size: 9px; color: rgba(201,168,76,0.35); letter-spacing: 0.1em; margin-bottom: 10px; }
+.artwork-caption-desc   { font-size: 11px; line-height: 1.7; color: rgba(255,255,255,0.32); margin-bottom: 12px; }
 .artwork-caption-link   {
-  font-size: 10px; color: rgba(201,168,76,0.55); text-decoration: none;
+  font-size: 10px; color: rgba(201,168,76,0.5); text-decoration: none;
   letter-spacing: 0.1em; border-bottom: 1px solid rgba(201,168,76,0.2);
   transition: color 0.2s, border-color 0.2s;
 }
 .artwork-caption-link:hover { color: #c9a84c; border-color: #c9a84c; opacity: 1; }
 
-/* Placeholder artwork */
+/* ── Placeholder artwork ── */
 .artwork-placeholder {
   width: 100%;
   height: 100%;
@@ -167,8 +222,22 @@ a:hover { opacity: 0.55; }
 }
 .artwork-placeholder-link:hover { color: #c9a84c; opacity: 1; }
 
+/* ── Mobile ── */
 @media (max-width: 640px) {
-  .artwork-banner       { font-size: 9px; gap: 6px; padding: 0 12px; }
-  .artwork-banner-rate  { display: none; }
-  .artwork-caption-desc { font-size: 10px; }
+  .artwork-banner       { height: 40px; padding: 0 12px; gap: 6px; }
+  .artwork-banner-back  { font-size: 8px; padding-right: 8px; }
+  .artwork-banner-sep.hide-mobile,
+  .artwork-banner-rate,
+  .artwork-banner-label { display: none; }
+  .artwork-banner-price { font-size: 11px; }
+  .artwork-banner-domain { font-size: 10px; }
+
+  .artwork-canvas-area  { top: 40px; height: calc(100vh - 40px); }
+
+  .artwork-caption       { padding: 40px 0 16px; }
+  .artwork-caption-inner { padding: 0 14px; }
+  .artwork-caption-toggle { display: flex; }
+  .artwork-caption-title  { font-size: 13px; }
+  .artwork-caption-desc   { font-size: 10px; }
+  .artwork-caption-artist { font-size: 9px; }
 }
