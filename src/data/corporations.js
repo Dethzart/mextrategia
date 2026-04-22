@@ -76,13 +76,13 @@ const BASE_RATE = 0.01;
  */
 export function calculatePrice(corp, now = Date.now()) {
   const elapsedSeconds = (now - PROJECT_EPOCH) / 1000;
-  const Fi = 1 + Math.log10(1 + corp.votes / 100) * corp.sentiment;
+  const Fi = 1 + Math.log10(1 + corp.votes / 100);
   const ratePerSecond = BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
   return elapsedSeconds * ratePerSecond;
 }
 
 export function calculateRate(corp) {
-  const Fi = 1 + Math.log10(1 + corp.votes / 100) * corp.sentiment;
+  const Fi = 1 + Math.log10(1 + corp.votes / 100);
   return BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
 }
 
@@ -99,34 +99,23 @@ export function formatMXN(value) {
   }).format(value);
 }
 
-// sentimentOverride: valor calculado desde comentarios; si es null usa corp.sentiment
-export function calculatePriceWithVotes(corp, dbVotes = 0, sentimentOverride = null, now = Date.now()) {
-  const S              = sentimentOverride !== null ? sentimentOverride : corp.sentiment;
+export function calculatePriceWithVotes(corp, dbVotes = 0, now = Date.now()) {
   const elapsedSeconds = (now - PROJECT_EPOCH) / 1000;
   const totalVotes     = corp.votes + dbVotes;
-  // Escala logarítmica: precio crece siempre pero con rendimientos decrecientes
-  // Fi = 1 + log10(1 + V/100) × S
-  const Fi             = 1 + Math.log10(1 + totalVotes / 100) * S;
+  const Fi             = 1 + Math.log10(1 + totalVotes / 100);
   const ratePerSecond  = BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
   return Math.max(0, elapsedSeconds * ratePerSecond);
 }
 
-export function calculateRateWithVotes(corp, dbVotes = 0, sentimentOverride = null) {
-  const S          = sentimentOverride !== null ? sentimentOverride : corp.sentiment;
+export function calculateRateWithVotes(corp, dbVotes = 0) {
   const totalVotes = corp.votes + dbVotes;
-  const Fi         = 1 + Math.log10(1 + totalVotes / 100) * S;
+  const Fi         = 1 + Math.log10(1 + totalVotes / 100);
   return BASE_RATE * corp.capRatio * corp.ethicsFactor * Fi;
 }
 
-// sentimentMap: { [corpId]: number } con S calculado desde comentarios
-export function calculateTotalDebtWithVotes(dbVotesMap = {}, sentimentMap = {}, now = Date.now()) {
+export function calculateTotalDebtWithVotes(dbVotesMap = {}, now = Date.now()) {
   return corporations.reduce(
-    (sum, corp) => sum + calculatePriceWithVotes(
-      corp,
-      dbVotesMap[corp.id] || 0,
-      sentimentMap[corp.id] ?? null,
-      now
-    ),
+    (sum, corp) => sum + calculatePriceWithVotes(corp, dbVotesMap[corp.id] || 0, now),
     0
   );
 }

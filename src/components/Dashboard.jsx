@@ -144,13 +144,13 @@ export default function Dashboard() {
 
   const getDB      = (corpId) => dbVotes[corpId] || 0;
   const elapsed    = getElapsedTime(now);
-  const totalDebt  = calculateTotalDebtWithVotes(dbVotes, {}, now);
+  const totalDebt  = calculateTotalDebtWithVotes(dbVotes, now);
   const totalVotes = corporations.reduce((s, c) => s + c.votes + getDB(c.id), 0);
 
   const sortedByPrice = [...corporations].sort(
     (a, b) =>
-      calculatePriceWithVotes(b, getDB(b.id), null, now) -
-      calculatePriceWithVotes(a, getDB(a.id), null, now)
+      calculatePriceWithVotes(b, getDB(b.id), now) -
+      calculatePriceWithVotes(a, getDB(a.id), now)
   );
 
   const maxVotes = Math.max(...corporations.map(c => c.votes + getDB(c.id)), 1);
@@ -245,8 +245,8 @@ export default function Dashboard() {
           <span className="live-dot" />
         </div>
         {sortedByPrice.map((corp, i) => {
-          const price = calculatePriceWithVotes(corp, getDB(corp.id), null, now);
-          const rate  = calculateRateWithVotes(corp, getDB(corp.id), null);
+          const price = calculatePriceWithVotes(corp, getDB(corp.id), now);
+          const rate  = calculateRateWithVotes(corp, getDB(corp.id));
           return (
             <div className="domain-card" key={corp.id}>
               <div className="domain-info">
@@ -261,7 +261,7 @@ export default function Dashboard() {
               <div className="domain-price-col">
                 <div className="domain-price">{formatMXN(price)}</div>
                 <div className="domain-rate">+{rate.toFixed(4)} MXN/seg</div>
-                <div className="domain-cap">CAP: {(corp.capRatio*100).toFixed(0)}% &nbsp;F: {corp.ethicsFactor} &nbsp;S: {corp.sentiment.toFixed(2)}</div>
+                <div className="domain-cap">CAP: {(corp.capRatio*100).toFixed(0)}% &nbsp;F: {corp.ethicsFactor}</div>
                 <div className="domain-reviews">
                   <span className="review-badge">Indeed <ReviewStars rating={corp.reviews.indeed} /></span>
                   <span className="review-badge">Glassdoor <ReviewStars rating={corp.reviews.glassdoor} /></span>
@@ -285,14 +285,12 @@ export default function Dashboard() {
 
         <div className="ranking-list">
           {sortedByPrice.map((corp, i) => {
-            const S          = corp.sentiment;
-            const totalV     = corp.votes + getDB(corp.id);
-            const isMyVote   = votedCorp === corp.id;
+            const totalV       = corp.votes + getDB(corp.id);
+            const isMyVote     = votedCorp === corp.id;
             const hasElsewhere = votedCorp !== null && !isMyVote;
-            const justVoted  = recentVote === corp.id;
-            const btnLabel   = justVoted ? 'EMITIDO' : isMyVote ? 'QUITAR' : hasElsewhere ? 'CAMBIAR' : 'VOTAR';
-            const voteBarW   = Math.round((totalV / maxVotes) * 100);
-            const sBarW      = Math.round(S * 100);
+            const justVoted    = recentVote === corp.id;
+            const btnLabel     = justVoted ? 'EMITIDO' : isMyVote ? 'QUITAR' : hasElsewhere ? 'CAMBIAR' : 'VOTAR';
+            const voteBarW     = Math.round((totalV / maxVotes) * 100);
 
             return (
               <div
@@ -315,10 +313,6 @@ export default function Dashboard() {
                         <span className="ranking-stat-label">Votos</span>
                         <span className="ranking-stat-value">{totalV.toLocaleString()}</span>
                       </span>
-                      <span className="ranking-stat">
-                        <span className="ranking-stat-label">S</span>
-                        <span className="ranking-stat-value">{S.toFixed(3)}</span>
-                      </span>
                     </div>
                     <button
                       className={`vote-btn${isMyVote ? ' vote-btn--active' : ''}${justVoted ? ' vote-btn--fired' : ''}`}
@@ -337,12 +331,6 @@ export default function Dashboard() {
                       />
                     </div>
                   </div>
-                  <div className="ranking-bar-row">
-                    <span className="ranking-bar-label">S</span>
-                    <div className="ranking-bar-track">
-                      <div className="ranking-bar-fill ranking-bar-fill--s" style={{ width: `${sBarW}%` }} />
-                    </div>
-                  </div>
                 </div>
               </div>
             );
@@ -353,6 +341,44 @@ export default function Dashboard() {
           {votedCorp
             ? <>Tu voto: <strong className="ranking-voted-domain">{corporations.find(c=>c.id===votedCorp)?.domain}</strong> &mdash; haz clic en otro para cambiarlo.</>
             : 'Aún no has emitido tu voto.'}
+        </div>
+      </div>
+
+      {/* ── Formula Panel ── */}
+      <div className="panel formula-panel">
+        <div className="panel-header"><span>Fórmula de Valoración</span></div>
+        <div className="formula-display">
+          P<sub>t</sub> = &Sigma;( 0.01 &times; CAP<sub>Act</sub>/CAP<sub>M&aacute;x</sub> &times; F<sub>factor</sub> &times; F<sub>i</sub> )
+        </div>
+        <div className="formula-vars">
+          <div className="formula-var">
+            <span className="formula-var-name">0.01 MXN/seg</span>
+            <span className="formula-var-desc">Tasa base — acumulación por segundo de inacción</span>
+          </div>
+          <div className="formula-var">
+            <span className="formula-var-name">CAP<sub>Act</sub>/CAP<sub>M&aacute;x</sub></span>
+            <span className="formula-var-desc">Indicador bursátil vs. máximo histórico</span>
+          </div>
+          <div className="formula-var">
+            <span className="formula-var-name">F<sub>factor</sub></span>
+            <span className="formula-var-desc">Factor ético — calificaciones Indeed/Glassdoor</span>
+          </div>
+          <div className="formula-var">
+            <span className="formula-var-name">F<sub>i</sub> = 1 + log<sub>10</sub>(1 + V/100)</span>
+            <span className="formula-var-desc">Amplificador de votos — escala logarítmica</span>
+          </div>
+        </div>
+        <div className="formula-rates">
+          <div className="formula-rates-label">Tasas Individuales Activas</div>
+          {corporations.map(corp => {
+            const rate = calculateRateWithVotes(corp, getDB(corp.id));
+            return (
+              <div className="formula-rate-row" key={corp.id}>
+                <span className="formula-rate-domain">{corp.domain}</span>
+                <span className="formula-rate-value">+{rate.toFixed(4)}/s</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
