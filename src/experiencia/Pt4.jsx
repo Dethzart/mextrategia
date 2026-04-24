@@ -9,6 +9,13 @@ function getClockTime() {
   });
 }
 
+function getClockDate() {
+  return new Date().toLocaleDateString('es-MX', {
+    weekday: 'long', day: 'numeric', month: 'long',
+    timeZone: 'America/Mexico_City',
+  });
+}
+
 export default function Pt4() {
   const navigate = useNavigate();
   const [time, setTime] = useState(getClockTime);
@@ -26,27 +33,44 @@ export default function Pt4() {
 
   return (
     <div className={styles.root}>
-      <div className={styles.clockBlock}>
-        <div className={styles.clockTime}>{time}</div>
-        <div className={styles.clockDate}>
-          {new Date().toLocaleDateString('es-MX', {
-            weekday: 'long', day: 'numeric', month: 'long',
-            timeZone: 'America/Mexico_City',
-          })}
+      {/* Blurred wallpaper background */}
+      <div className={styles.wallpaper} />
+      <div className={styles.overlay} />
+
+      {/* Status bar */}
+      <div className={styles.statusBar}>
+        <span className={styles.statusTime}>{time}</span>
+        <div className={styles.statusIcons}>
+          <span>▪▪▪▪</span>
+          <span>WiFi</span>
+          <span>100%</span>
         </div>
       </div>
 
+      {/* Clock */}
+      <div className={styles.clockBlock}>
+        <div className={styles.clockTime}>{time}</div>
+        <div className={styles.clockDate}>{getClockDate()}</div>
+      </div>
+
+      {/* WhatsApp notification */}
       {showNotif && (
-        <div className={styles.notifBanner} onClick={() => navigate('/pt5')}>
-          <div className={styles.notifRow}>
-            <div className={styles.notifDot} />
-            <div className={styles.notifAppName}>WhatsApp</div>
-            <div className={styles.notifTs}>ahora</div>
+        <div className={styles.notifBanner} onClick={() => navigate('/pt2')}>
+          <div className={styles.notifHeader}>
+            <div className={styles.notifIcon}>
+              <span className={styles.notifIconGlyph}>💬</span>
+            </div>
+            <span className={styles.notifApp}>WhatsApp</span>
+            <span className={styles.notifDot} />
+            <span className={styles.notifTime}>ahora</span>
           </div>
-          <div className={styles.notifSender}>ESPECTRO</div>
+          <div className={styles.notifSender}>Dethz Sagrav</div>
           <div className={styles.notifPreview}>🎤 Nota de voz · 0:37</div>
         </div>
       )}
+
+      {/* Swipe hint */}
+      <div className={styles.swipeHint}>Desliza para desbloquear</div>
     </div>
   );
 }

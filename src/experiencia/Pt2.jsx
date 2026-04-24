@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Chat.module.css';
 
 const MESSAGES = [
-  { text: '¿Por qué contestaste?', delay: 1800 },
-  { text: 'Todos contestan al final.', delay: 3200 },
-  { text: 'Lo que escuchaste no fue un accidente.', delay: 3500 },
+  { text: 'Sabía que lo contestarías.', delay: 1800 },
+  { text: 'Lo que escuchaste no fue un accidente.', delay: 3200 },
+  { text: 'Llevo tiempo observando este dominio.', delay: 3500 },
   { text: 'Te mandé algo.', delay: 2500 },
 ];
 
@@ -29,7 +29,7 @@ export default function Pt2() {
       }
       if (!cancelled) {
         await wait(2000);
-        if (!cancelled) navigate('/pt4');
+        if (!cancelled) navigate('/pt5');
       }
     }
     run();
@@ -43,13 +43,18 @@ export default function Pt2() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
+        <div className={styles.backArrow}>‹</div>
         <div className={styles.avatar}>
-          <img src="/acto1/espectro.png" alt="ESPECTRO" />
+          <img src="/acto1/espectro.png" alt="Dethz Sagrav" />
           <span className={styles.onlineDot} />
         </div>
         <div className={styles.headerInfo}>
-          <div className={styles.headerName}>ESPECTRO</div>
+          <div className={styles.headerName}>Dethz Sagrav</div>
           <div className={styles.headerSub}>en línea</div>
+        </div>
+        <div className={styles.headerIcons}>
+          <span>📹</span>
+          <span>📞</span>
         </div>
       </div>
 
@@ -57,20 +62,19 @@ export default function Pt2() {
         {visible.map((text, i) => (
           <div key={i} className={styles.bubble}>
             <span className={styles.bubbleText}>{text}</span>
-            <span className={styles.bubbleTime}>{getTime()}</span>
+            <div className={styles.bubbleTime}>
+              <span className={styles.bubbleTimeText}>{getTime()}</span>
+              <span className={styles.bubbleCheck}>✓✓</span>
+            </div>
           </div>
         ))}
-        {typing && <TypingBubble />}
+        {typing && (
+          <div className={styles.typingBubble}>
+            <div className={styles.typingDots}><span /><span /><span /></div>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
-    </div>
-  );
-}
-
-function TypingBubble() {
-  return (
-    <div className={styles.bubble}>
-      <div className={styles.typingDots}><span /><span /><span /></div>
     </div>
   );
 }

@@ -2,17 +2,30 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Pt1.module.css';
 
-export default function Pt1() {
-  const navigate = useNavigate();
-  const ringtoneRef = useRef(null);
-  const audioRef    = useRef(null);
-  const timerRef    = useRef(null);
+function useClockTime() {
+  const [t, setT] = useState(() =>
+    new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false })
+  );
+  useEffect(() => {
+    const id = setInterval(() =>
+      setT(new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false }))
+    , 1000);
+    return () => clearInterval(id);
+  }, []);
+  return t;
+}
 
-  const [phase, setPhase]   = useState('ringing');
-  const [choice, setChoice] = useState(null);
+export default function Pt1() {
+  const navigate     = useNavigate();
+  const ringtoneRef  = useRef(null);
+  const audioRef     = useRef(null);
+  const timerRef     = useRef(null);
+  const clockTime    = useClockTime();
+
+  const [phase, setPhase]       = useState('ringing');
   const [callTime, setCallTime] = useState(0);
 
-  // ── Ringtone (real MP3, loops during ringing) ──
+  // Ringtone — loops during ringing
   useEffect(() => {
     if (phase !== 'ringing') return;
     const audio = new Audio('/acto1/ringtone.mp3');
@@ -23,7 +36,7 @@ export default function Pt1() {
     return () => { audio.pause(); audio.currentTime = 0; };
   }, [phase]);
 
-  // ── Call timer ──
+  // Call timer
   useEffect(() => {
     if (phase !== 'answered') return;
     timerRef.current = setInterval(() => setCallTime(t => t + 1), 1000);
@@ -49,24 +62,26 @@ export default function Pt1() {
       clearTimeout(hardTimer);
       durationTimer = setTimeout(finish, (audio.duration + 1) * 1000);
     });
-    audio.play().catch(() => { clearTimeout(hardTimer); clearTimeout(durationTimer); setTimeout(finish, 300); });
+    audio.play().catch(() => {
+      clearTimeout(hardTimer);
+      clearTimeout(durationTimer);
+      setTimeout(finish, 300);
+    });
   }, []);
 
   const handleAnswer = useCallback(() => {
     setPhase('answered');
-    setChoice('answered');
     playAudio('/acto1/Audio1A.mp3', () => {
       clearInterval(timerRef.current);
-      navigate('/pt2');
+      navigate('/pt4');
     });
   }, [playAudio, navigate]);
 
   const handleIgnore = useCallback(() => {
     setPhase('ignoring');
-    setChoice('ignored');
     setTimeout(() => {
       setPhase('ignored');
-      playAudio('/acto1/Audio1B.mp3', () => navigate('/pt3'));
+      playAudio('/acto1/Audio1B.mp3', () => navigate('/pt4'));
     }, 3000);
   }, [playAudio, navigate]);
 
@@ -75,57 +90,97 @@ export default function Pt1() {
   }
 
   return (
-    <div className={`${styles.root} ${styles[`phase_${phase}`] || ''} ${phase === 'ignored' ? styles.vibrating : ''}`}>
+    <div className={`${styles.root} ${phase === 'ignored' ? styles.vibrating : ''}`}>
+      {/* Blurred photo background */}
+      <div className={styles.photoBg} />
+      <div className={`${styles.overlay} ${styles[`overlay_${phase}`] || ''}`} />
 
+      {/* Status bar */}
+      <div className={styles.statusBar}>
+        <span className={styles.statusTime}>{clockTime}</span>
+        <div className={styles.statusIcons}>
+          <span className={styles.signal}>▪▪▪▪</span>
+          <span className={styles.wifi}>WiFi</span>
+          <span className={styles.battery}>100%</span>
+        </div>
+      </div>
+
+      {/* ── RINGING ── */}
       {phase === 'ringing' && (
-        <div className={styles.callUI}>
-          <div className={styles.callTop}>
-            <div className={styles.callStatus}>llamada entrante</div>
-            <div className={styles.avatarWrap}>
-              <div className={styles.ring1} />
-              <div className={styles.ring2} />
-              <div className={styles.ring3} />
-              <div className={styles.avatar}>
-                <img src="/acto1/espectro.png" alt="ESPECTRO" />
-              </div>
+        <>
+          <div className={styles.callerInfo}>
+            <div className={styles.callerLabel}>Llamada entrante</div>
+            <div className={styles.avatar}>
+              <img src="/acto1/espectro.png" alt="Dethz Sagrav" />
             </div>
-            <div className={styles.callerName}>ESPECTRO</div>
-            <div className={styles.callerSub}>contacto desconocido</div>
+            <div className={styles.callerName}>Dethz Sagrav</div>
+            <div className={styles.callerSub}>móvil</div>
           </div>
 
-          <div className={styles.callActions}>
-            <button className={styles.btnIgnore} onClick={handleIgnore}>
-              <span className={styles.btnIcon}>✕</span>
-              <span className={styles.btnLabel}>IGNORAR</span>
-            </button>
-            <button className={styles.btnAnswer} onClick={handleAnswer}>
-              <span className={styles.btnIcon}>✆</span>
-              <span className={styles.btnLabel}>CONTESTAR</span>
-            </button>
+          <div className={styles.actions}>
+            <div className={styles.actionBtn}>
+              <button className={styles.btnDecline} onClick={handleIgnore}>
+                <span>✕</span>
+              </button>
+              <span className={styles.actionLabel}>Rechazar</span>
+            </div>
+            <div className={styles.actionBtn}>
+              <button className={styles.btnAccept} onClick={handleAnswer}>
+                <span>✆</span>
+              </button>
+              <span className={styles.actionLabel}>Aceptar</span>
+            </div>
           </div>
-        </div>
+
+          {/* Ripple rings behind avatar */}
+          <div className={styles.ringsWrap}>
+            <div className={styles.ring1} />
+            <div className={styles.ring2} />
+            <div className={styles.ring3} />
+          </div>
+        </>
       )}
 
+      {/* ── IGNORING ── */}
       {phase === 'ignoring' && (
-        <div className={styles.centerOverlay}>
-          <span className={styles.statusText}>ignorando...</span>
+        <div className={styles.centerMsg}>
+          <div className={styles.avatar}><img src="/acto1/espectro.png" alt="" /></div>
+          <div className={styles.callerName}>Dethz Sagrav</div>
+          <div className={styles.callerSub}>Rechazando...</div>
         </div>
       )}
 
+      {/* ── IGNORED (audio playing) ── */}
       {phase === 'ignored' && (
-        <div className={styles.centerOverlay}>
-          <div className={styles.missedIcon}>✕</div>
-          <span className={styles.statusText}>llamada perdida</span>
+        <div className={styles.centerMsg}>
+          <div className={styles.avatar}><img src="/acto1/espectro.png" alt="" /></div>
+          <div className={styles.callerName}>Dethz Sagrav</div>
+          <div className={styles.callerSub}>Llamada perdida</div>
         </div>
       )}
 
+      {/* ── ANSWERED ── */}
       {phase === 'answered' && (
-        <div className={styles.activeCallUI}>
-          <div className={styles.avatar}>
-            <img src="/acto1/espectro.png" alt="ESPECTRO" />
-          </div>
-          <div className={styles.callerName}>ESPECTRO</div>
+        <div className={styles.activeCall}>
+          <div className={styles.callerLabel}>En llamada</div>
+          <div className={styles.avatar}><img src="/acto1/espectro.png" alt="" /></div>
+          <div className={styles.callerName}>Dethz Sagrav</div>
           <div className={styles.callTimer}>{fmt(callTime)}</div>
+
+          <div className={styles.activeActions}>
+            <div className={styles.activeBtn}>
+              <div className={styles.activeBtnIcon}>🔇</div>
+              <span>silencio</span>
+            </div>
+            <div className={styles.activeBtn}>
+              <div className={styles.activeBtnIcon}>🔊</div>
+              <span>altavoz</span>
+            </div>
+            <div className={styles.activeBtn} onClick={() => navigate('/pt4')}>
+              <button className={styles.btnEnd}>✕</button>
+              <span>colgar</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

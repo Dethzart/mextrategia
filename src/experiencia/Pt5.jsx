@@ -26,7 +26,7 @@ export default function Pt5() {
     audio.addEventListener('ended', () => {
       setIsPlaying(false);
       clearInterval(intervalRef.current);
-      setTimeout(() => navigate('/panel'), 1500);
+      setTimeout(() => navigate('/pt6'), 1500);
     });
     return () => { audio.pause(); clearInterval(intervalRef.current); };
   }, [navigate]);

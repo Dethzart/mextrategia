@@ -70,9 +70,37 @@ a:hover { opacity: 0.55; }
 
 @keyframes pulse-glow  { 0%,100%{opacity:0.25} 50%{opacity:0.9} }
 
+/* ── Phone frame: dark theme override para experiencia + panel ── */
+.exp-phone-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 430px;
+  max-height: 932px;
+  overflow: hidden;
+
+  /* Override light theme vars to dark inside the frame */
+  --bg-primary:    #060608;
+  --bg-secondary:  #0a0a0d;
+  --bg-panel:      #0d0d10;
+  --bg-hover:      #131316;
+  --border:        rgba(201,168,76,0.10);
+  --border-accent: rgba(201,168,76,0.22);
+  --text-primary:   rgba(255,255,255,0.88);
+  --text-secondary: rgba(255,255,255,0.55);
+  --text-muted:     rgba(255,255,255,0.30);
+  --accent-orange: #c9a84c;
+  --accent-green:  #4a9e65;
+  --accent-red:    #cc4444;
+  --accent-blue:   #4a7acc;
+  --accent-yellow: #c9a84c;
+
+  background: var(--bg-primary);
+}
+
 @media (min-width: 600px) {
   .exp-phone-frame {
-    box-shadow: 0 0 0 1px rgba(201,168,76,0.08), 0 32px 96px rgba(0,0,0,0.85);
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.08), 0 32px 96px rgba(0,0,0,0.9);
   }
 }
 @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }

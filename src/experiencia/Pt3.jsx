@@ -37,7 +37,7 @@ export default function Pt3() {
       }
       if (!cancelled) {
         await wait(2000);
-        if (!cancelled) navigate('/pt4');
+        if (!cancelled) navigate('/pt5');
       }
     }
     run();
@@ -54,7 +54,7 @@ export default function Pt3() {
         <div className={missedStyles.missedCard}>
           <div className={missedStyles.missedIcon}>✕</div>
           <div className={missedStyles.missedLabel}>Llamada perdida</div>
-          <div className={missedStyles.missedCaller}>ESPECTRO</div>
+          <div className={missedStyles.missedCaller}>Dethz Sagrav</div>
           <div className={missedStyles.missedTime}>{getTime()}</div>
         </div>
       </div>
@@ -64,12 +64,17 @@ export default function Pt3() {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
+        <div className={styles.backArrow}>‹</div>
         <div className={styles.avatar}>
-          <img src="/acto1/espectro.png" alt="ESPECTRO" />
+          <img src="/acto1/espectro.png" alt="Dethz Sagrav" />
         </div>
         <div className={styles.headerInfo}>
-          <div className={styles.headerName}>ESPECTRO</div>
+          <div className={styles.headerName}>Dethz Sagrav</div>
           <div className={styles.headerSub}>visto hoy</div>
+        </div>
+        <div className={styles.headerIcons}>
+          <span>📹</span>
+          <span>📞</span>
         </div>
       </div>
 
@@ -80,11 +85,14 @@ export default function Pt3() {
         {visible.map((text, i) => (
           <div key={i} className={styles.bubble}>
             <span className={styles.bubbleText}>{text}</span>
-            <span className={styles.bubbleTime}>{getTime()}</span>
+            <div className={styles.bubbleTime}>
+              <span className={styles.bubbleTimeText}>{getTime()}</span>
+              <span className={styles.bubbleCheck}>✓✓</span>
+            </div>
           </div>
         ))}
         {typing && (
-          <div className={styles.bubble}>
+          <div className={styles.typingBubble}>
             <div className={styles.typingDots}><span /><span /><span /></div>
           </div>
         )}

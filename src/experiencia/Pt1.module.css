@@ -1,204 +1,279 @@
 .root {
   position: absolute;
   inset: 0;
-  background: var(--exp-bg);
   overflow: hidden;
-  font-family: var(--font-mono);
-  transition: background 1s ease;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  color: #fff;
 }
 
-.phase_ignoring { background: #080205; }
-.phase_ignored  { background: #0c0305; }
-.phase_answered { background: #050805; }
+/* ── Blurred photo background ── */
+.photoBg {
+  position: absolute;
+  inset: -40px;
+  background: url('/acto1/espectro.png') center / cover no-repeat;
+  filter: blur(28px) brightness(0.28) saturate(0.5);
+  z-index: 0;
+}
 
-/* ── Call UI ── */
-.callUI {
+/* ── Overlay per phase ── */
+.overlay {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 80px 0 64px;
+  z-index: 1;
+  transition: background 0.6s ease;
+  background: rgba(0,0,0,0.35);
 }
+.overlay_ringing  { background: rgba(0,0,0,0.35); }
+.overlay_answered { background: rgba(0,0,0,0.55); }
+.overlay_ignoring { background: rgba(0,0,0,0.50); }
+.overlay_ignored  { background: rgba(20,0,0,0.55); }
 
-.callTop {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.callStatus {
-  font-size: 9px;
-  letter-spacing: 0.28em;
-  color: var(--exp-accent);
-  text-transform: uppercase;
-  animation: blink 1.6s step-end infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.25; }
-}
-
-/* ── Avatar + rings ── */
-.avatarWrap {
-  position: relative;
-  width: 88px;
-  height: 88px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ring1, .ring2, .ring3 {
+/* ── Status bar ── */
+.statusBar {
   position: absolute;
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  border: 1px solid rgba(201,168,76,0.28);
-  animation: ripple 2.6s ease-out infinite;
-}
-.ring2 { animation-delay: 0.87s; }
-.ring3 { animation-delay: 1.73s; }
-
-@keyframes ripple {
-  0%   { transform: scale(1);   opacity: 0.55; }
-  100% { transform: scale(3.6); opacity: 0;    }
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 6px;
+  height: 44px;
 }
 
+.statusTime {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+.statusIcons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+
+.signal  { letter-spacing: -1px; font-size: 10px; }
+.wifi    { font-size: 10px; }
+.battery { font-size: 10px; }
+
+/* ── Caller info (ringing state) ── */
+.callerInfo {
+  position: absolute;
+  top: 90px;
+  left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.callerLabel {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.callerName {
+  font-size: 30px;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+
+.callerSub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.04em;
+}
+
+/* ── Avatar ── */
 .avatar {
-  width: 88px;
-  height: 88px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid var(--exp-border);
-  flex-shrink: 0;
-  z-index: 1;
+  border: 2px solid rgba(255,255,255,0.2);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 2;
 }
 
 .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(0.3);
 }
 
-.callerName {
-  font-size: 22px;
-  letter-spacing: 0.22em;
-  color: var(--exp-text);
-  font-weight: 400;
-  text-transform: uppercase;
+/* ── Ripple rings (absolute, behind avatar in callerInfo) ── */
+.ringsWrap {
+  position: absolute;
+  top: 138px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  z-index: 5;
+  pointer-events: none;
 }
 
-.callerSub {
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  color: var(--exp-muted);
-  text-transform: uppercase;
+.ring1, .ring2, .ring3 {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  animation: ripple 2.4s ease-out infinite;
+}
+.ring2 { animation-delay: 0.8s; }
+.ring3 { animation-delay: 1.6s; }
+
+@keyframes ripple {
+  0%   { transform: scale(1);   opacity: 0.5; }
+  100% { transform: scale(2.8); opacity: 0; }
 }
 
-/* ── Buttons ── */
-.callActions {
+/* ── Action buttons (ringing) ── */
+.actions {
+  position: absolute;
+  bottom: 60px;
+  left: 0; right: 0;
+  z-index: 10;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 0 48px;
+  padding: 0 40px;
 }
 
-.btnIgnore, .btnAnswer {
+.actionBtn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  background: none;
+  gap: 10px;
+}
+
+.actionLabel {
+  font-size: 12px;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.03em;
+}
+
+.btnDecline,
+.btnAccept {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
   border: none;
   cursor: pointer;
-}
-
-.btnIcon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
-  transition: transform 0.1s, opacity 0.15s;
+  font-size: 24px;
+  transition: transform 0.12s, opacity 0.15s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
-.btnIgnore .btnIcon { background: rgba(180,30,30,0.85); color: rgba(255,255,255,0.9); }
-.btnAnswer .btnIcon { background: var(--exp-accent);    color: #0d0d10; }
-.btnIgnore:active .btnIcon,
-.btnAnswer:active .btnIcon { transform: scale(0.9); opacity: 0.8; }
+.btnDecline:active,
+.btnAccept:active { transform: scale(0.9); opacity: 0.85; }
 
-.btnLabel {
-  font-family: var(--font-mono);
-  font-size: 8px;
-  letter-spacing: 0.22em;
-  color: var(--exp-muted);
-  text-transform: uppercase;
-}
+.btnDecline { background: #ff3b30; color: #fff; }
+.btnAccept  { background: #34c759; color: #fff; }
 
-/* ── Center overlay ── */
-.centerOverlay {
+/* ── Center message (ignoring / ignored) ── */
+.centerMsg {
   position: absolute;
   inset: 0;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-}
-
-.missedIcon {
-  font-size: 32px;
-  color: rgba(180,30,30,0.75);
-  animation: pulse 1.3s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
-}
-
-.statusText {
-  font-size: 9px;
-  letter-spacing: 0.25em;
-  color: var(--exp-muted);
-  text-transform: uppercase;
+  gap: 12px;
 }
 
 /* ── Active call ── */
-.activeCallUI {
+.activeCall {
   position: absolute;
   inset: 0;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 16px;
+  justify-content: space-between;
+  padding: 90px 0 60px;
 }
 
 .callTimer {
-  font-size: 36px;
-  letter-spacing: 0.06em;
-  color: var(--exp-text);
+  font-size: 16px;
+  color: #34c759;
+  letter-spacing: 0.12em;
   font-variant-numeric: tabular-nums;
+  margin-top: -4px;
 }
 
-/* ── Vibrate ── */
-@keyframes vibrate {
-  0%   { transform: translate(0,0); }
-  10%  { transform: translate(-3px, 1px); }
-  20%  { transform: translate(3px,-1px); }
-  30%  { transform: translate(-4px, 2px); }
-  40%  { transform: translate(4px,-2px); }
-  50%  { transform: translate(-3px, 1px); }
-  60%  { transform: translate(3px, 2px); }
-  70%  { transform: translate(-2px,-2px); }
-  80%  { transform: translate(2px, 1px); }
-  90%  { transform: translate(-1px,-1px); }
-  100% { transform: translate(0,0); }
+/* ── In-call action row ── */
+.activeActions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 0 24px;
 }
-.vibrating { animation: vibrate 0.08s linear infinite; }
+
+.activeBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.65);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.activeBtnIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.btnEnd {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ff3b30;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(255,59,48,0.4);
+  transition: transform 0.1s;
+}
+.btnEnd:active { transform: scale(0.9); }
+
+/* ── Vibrate ── */
+.vibrating {
+  animation: vibrate 0.1s linear infinite;
+}
+@keyframes vibrate {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-3px); }
+  75%  { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}

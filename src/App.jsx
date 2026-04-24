@@ -11,6 +11,7 @@ import Pt2 from './experiencia/Pt2';
 import Pt3 from './experiencia/Pt3';
 import Pt4 from './experiencia/Pt4';
 import Pt5 from './experiencia/Pt5';
+import Pt6 from './experiencia/Pt6';
 import { supabase } from './lib/supabase';
 import {
   corporations,
@@ -26,7 +27,6 @@ function TickerStrip({ dbVotes, now }) {
     rate:   `+${calculateRateWithVotes(corp, dbVotes[corp.id] || 0).toFixed(4)}/s`,
   }));
   const doubled = [...items, ...items];
-
   return (
     <div className="ticker-strip">
       <div className="ticker-scroll">
@@ -53,47 +53,15 @@ function getMXOffset() {
 const MX_OFFSET = getMXOffset();
 
 const routes = [
-  // { path: '/manifiesto', label: 'Manifiesto', component: <Manifesto /> }, // V2
   { path: '/panel',   label: 'Panel',   },
   { path: '/galeria', label: 'Galería', },
-  // { path: '/estado', label: 'Estado', }, // V2
 ];
 
 export default function App() {
   const navigate     = useNavigate();
   const location     = useLocation();
 
-  // Experiencia — sin shell, phone frame en desktop
-  const isExperiencia = location.pathname === '/' || location.pathname.startsWith('/pt');
-  if (isExperiencia) {
-    return (
-      <div style={{
-        position: 'fixed', inset: 0,
-        background: '#030305',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <div style={{
-          position: 'relative',
-          width: '100%', height: '100%',
-          maxWidth: 430, maxHeight: 932,
-          overflow: 'hidden',
-          boxShadow: 'none',
-        }}
-          className="exp-phone-frame"
-        >
-          <Routes>
-            <Route path="/"    element={<Landing />} />
-            <Route path="/pt1" element={<Pt1 />} />
-            <Route path="/pt2" element={<Pt2 />} />
-            <Route path="/pt3" element={<Pt3 />} />
-            <Route path="/pt4" element={<Pt4 />} />
-            <Route path="/pt5" element={<Pt5 />} />
-          </Routes>
-        </div>
-      </div>
-    );
-  }
-
+  // ── All hooks unconditionally (React rules) ──
   const [now,          setNow]          = useState(Date.now());
   const [dbVotes,      setDbVotes]      = useState({});
   const [menuOpen,     setMenuOpen]     = useState(false);
@@ -104,19 +72,16 @@ export default function App() {
 
   const currentPath = location.pathname;
 
-  // Ticker clock
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 500);
     return () => clearInterval(t);
   }, []);
 
-  // Topbar clock
   useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(t);
   }, []);
 
-  // Votes — fuente única de verdad para ticker y dashboard
   useEffect(() => {
     async function loadVotes() {
       const { data: votes } = await supabase.from('votes').select('corp_id');
@@ -126,7 +91,6 @@ export default function App() {
       setDbVotes(counts);
     }
     loadVotes();
-
     const channel = supabase.channel('app-votes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, async () => {
         const { data: votes } = await supabase.from('votes').select('corp_id');
@@ -136,7 +100,6 @@ export default function App() {
         setDbVotes(counts);
       })
       .subscribe();
-
     return () => supabase.removeChannel(channel);
   }, []);
 
@@ -170,9 +133,33 @@ export default function App() {
 
   function goTo(path) { navigate(path); setMenuOpen(false); }
 
+  // ── Experience routes — phone frame, dark theme, no shell ──
+  const isExperiencia = currentPath === '/' || currentPath.startsWith('/pt');
+  if (isExperiencia) {
+    return (
+      <div style={{
+        position: 'fixed', inset: 0,
+        background: '#030305',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div className="exp-phone-frame">
+          <Routes>
+            <Route path="/"      element={<Landing />} />
+            <Route path="/pt1"   element={<Pt1 />} />
+            <Route path="/pt2"   element={<Pt2 />} />
+            <Route path="/pt3"   element={<Pt3 />} />
+            <Route path="/pt4"   element={<Pt4 />} />
+            <Route path="/pt5"   element={<Pt5 />} />
+            <Route path="/pt6"   element={<Pt6 />} />
+          </Routes>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Main site shell ──
   return (
     <div className="app">
-
       <TickerStrip dbVotes={dbVotes} now={now} />
 
       <div className={`site-header${headerHidden ? ' site-header--hidden' : ''}`}>
@@ -180,7 +167,6 @@ export default function App() {
           <div className="topbar-logo" onClick={() => goTo('/panel')}>
             MEXTRATEGIA
           </div>
-
           <nav className="topbar-nav desktop-nav">
             {routes.map(r => (
               <button
@@ -192,7 +178,6 @@ export default function App() {
               </button>
             ))}
           </nav>
-
           <div className="topbar-right">
             <div className="topbar-clock">
               {time.toLocaleTimeString('es-MX', { hour12: false, timeZone: 'America/Mexico_City' })}
@@ -227,7 +212,6 @@ export default function App() {
       <div className="main-content">
         <Routes>
           <Route path="/manifiesto" element={<Manifesto />} />
-          <Route path="/panel"      element={<Dashboard dbVotes={dbVotes} setDbVotes={setDbVotes} />} />
           <Route path="/galeria"    element={<Gallery />} />
           <Route path="/estado"     element={<Status />} />
           <Route path="*"           element={<Navigate to="/panel" replace />} />
