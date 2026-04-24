@@ -1,0 +1,120 @@
+.root {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  overflow: hidden;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.bgVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.35;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, #000 100%);
+  z-index: 1;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  padding: 32px;
+}
+
+/* ── Terminal boot lines ── */
+.terminal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.termLine {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  transition: color 0.4s, opacity 0.4s;
+}
+
+.active {
+  color: #00FF41;
+  opacity: 1;
+}
+
+.dimmed {
+  color: rgba(0, 255, 65, 0.3);
+  opacity: 0.5;
+}
+
+/* ── CTA block ── */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: fadeUp 0.8s ease-out both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.title {
+  font-size: 42px;
+  letter-spacing: 0.25em;
+  color: #fff;
+  font-weight: 400;
+}
+
+.subtitle {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+}
+
+.btnStart {
+  margin-top: 16px;
+  background: none;
+  border: 1px solid #00FF41;
+  border-radius: 0;
+  color: #00FF41;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  padding: 14px 32px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btnStart:hover {
+  background: #00FF41;
+  color: #000;
+}
+
+/* ── Watermark ── */
+.watermark {
+  position: absolute;
+  bottom: 18px;
+  left: 16px;
+  z-index: 20;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  pointer-events: none;
+}

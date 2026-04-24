@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import Manifesto from './components/Manifesto';
 import Gallery from './components/Gallery';
 import Status from './components/Status';
+import Landing from './experiencia/Landing';
 import Pt1 from './experiencia/Pt1';
 import Pt2 from './experiencia/Pt2';
 import Pt3 from './experiencia/Pt3';
@@ -62,10 +63,12 @@ export default function App() {
   const navigate     = useNavigate();
   const location     = useLocation();
 
-  // Experiencia fullscreen — sin shell
-  if (location.pathname.startsWith('/pt')) {
+  // Experiencia fullscreen — sin shell (landing + actos)
+  const isExperiencia = location.pathname === '/' || location.pathname.startsWith('/pt');
+  if (isExperiencia) {
     return (
       <Routes>
+        <Route path="/"    element={<Landing />} />
         <Route path="/pt1" element={<Pt1 />} />
         <Route path="/pt2" element={<Pt2 />} />
         <Route path="/pt3" element={<Pt3 />} />

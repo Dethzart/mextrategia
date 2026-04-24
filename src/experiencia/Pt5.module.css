@@ -1,0 +1,205 @@
+.root {
+  position: fixed;
+  inset: 0;
+  background: #111B21;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* ── Header (same as chat) ── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #202C33;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.headerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.headerName {
+  font-size: 15px;
+  font-weight: 500;
+  color: #E9EDEF;
+  letter-spacing: 0.04em;
+}
+
+.headerSub {
+  font-size: 12px;
+  color: #8696A0;
+}
+
+/* ── Messages area ── */
+.messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 16px;
+  gap: 20px;
+}
+
+/* ── Voice bubble ── */
+.voiceBubble {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #202C33;
+  border-radius: 0 16px 16px 16px;
+  padding: 12px 14px;
+  max-width: 88%;
+  animation: popIn 0.3s ease-out both;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.playBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #00FF41;
+  border: none;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.playBtn:hover { background: #00e638; }
+.playBtn:active { transform: scale(0.93); }
+
+/* ── Waveform ── */
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 2.5px;
+  flex: 1;
+  height: 36px;
+}
+
+.bar {
+  flex: 1;
+  border-radius: 2px;
+  background: #3C4A52;
+  min-height: 4px;
+  transition: background 0.2s;
+}
+
+.barPlayed {
+  background: #00FF41;
+}
+
+.barAnimating {
+  animation: wave 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes wave {
+  from { transform: scaleY(1); }
+  to   { transform: scaleY(0.55); }
+}
+
+/* ── Timer ── */
+.timer {
+  font-size: 12px;
+  color: #8696A0;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.timerTotal {
+  color: rgba(134,150,160,0.55);
+}
+
+/* ── Tap hint ── */
+.tapHint {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+}
+
+/* ── Footer / done ── */
+.footer {
+  padding: 20px 16px 40px;
+  background: #111B21;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: fadeUp 0.5s ease-out both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.doneText {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.3);
+}
+
+.btnContinue {
+  background: none;
+  border: 1px solid #00FF41;
+  border-radius: 0;
+  color: #00FF41;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btnContinue:hover {
+  background: #00FF41;
+  color: #000;
+}
+
+/* ── Watermark ── */
+.watermark {
+  position: absolute;
+  bottom: 18px;
+  left: 16px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.12);
+  text-transform: uppercase;
+  pointer-events: none;
+}
