@@ -8,7 +8,16 @@ export default function Tour({ steps, onClose }) {
   const step = steps[currentStep];
 
   const updateRect = () => {
-    const el = document.querySelector(step.target);
+    const selectors = step.target.split(',').map(s => s.trim());
+    let el = null;
+    for (const sel of selectors) {
+      const found = document.querySelector(sel);
+      if (found && found.getBoundingClientRect().width > 0) {
+        el = found;
+        break;
+      }
+    }
+
     if (el) {
       const rect = el.getBoundingClientRect();
       
