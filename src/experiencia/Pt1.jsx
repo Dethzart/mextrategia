@@ -95,10 +95,6 @@ export default function Pt1() {
       <div className={styles.photoBg} />
       <div className={`${styles.overlay} ${styles[`overlay_${phase}`] || ''}`} />
 
-      {/* Status bar */}
-      <div className={styles.statusBar}>
-        <span className={styles.statusTime}>{clockTime}</span>
-      </div>
 
       {/* ── RINGING ── */}
       {phase === 'ringing' && (
