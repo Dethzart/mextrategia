@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Pt1.module.css';
 import { playClick } from '../lib/sfx';
+import useThemeColor from '../lib/useThemeColor';
 
 function useClockTime() {
   const [t, setT] = useState(() =>
@@ -29,6 +30,22 @@ export default function Pt1() {
   const [hasRejected, setHasRejected] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
+  useThemeColor('#0e1215');
+
+  // Cleanup audios on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+      if (ringtoneRef.current) {
+        ringtoneRef.current.pause();
+        ringtoneRef.current.src = '';
+      }
+    };
+  }, []);
+
   // Ringtone — loops during ringing
   useEffect(() => {
     if (phase !== 'ringing') return;
@@ -42,10 +59,10 @@ export default function Pt1() {
 
   // Call timer
   useEffect(() => {
-    if (phase !== 'answered') return;
+    if (phase !== 'answered' || isPaused) return;
     timerRef.current = setInterval(() => setCallTime(t => t + 1), 1000);
     return () => clearInterval(timerRef.current);
-  }, [phase]);
+  }, [phase, isPaused]);
 
   const playAudio = useCallback((src, onEnd) => {
     if (audioRef.current) audioRef.current.pause();

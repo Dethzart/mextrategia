@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from './Pt6.module.css';
+import useThemeColor from '../lib/useThemeColor';
 
 const PANEL_URL = 'https://www.mextrategia.art/panel';
 
@@ -12,6 +13,8 @@ const BODY_LINES = [
 
 export default function Pt6() {
   const [visible, setVisible] = useState(false);
+
+  useThemeColor('#f2f2f7');
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 300);

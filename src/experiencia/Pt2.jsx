@@ -31,6 +31,8 @@ export default function Pt2() {
   const intervalRef = useRef(null);
   const bottomRef   = useRef(null);
 
+  useThemeColor('#f0f2f5');
+
   useEffect(() => {
     if (!isPlaying) {
       setRandomHeights(BAR_HEIGHTS);
@@ -82,6 +84,17 @@ export default function Pt2() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [visible, typing, showVoice]);
+
+  // Cleanup audio on unmount
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
+      clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
