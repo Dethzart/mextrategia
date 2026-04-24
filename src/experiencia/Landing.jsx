@@ -24,12 +24,10 @@ export default function Landing() {
 
   return (
     <div className={styles.root}>
-      <video
-        className={styles.bgVideo}
-        src="/acto1/Video1.mp4"
-        autoPlay muted loop playsInline
-      />
-      <div className={styles.overlay} />
+      {/* CSS-only background: scanlines + radial glow */}
+      <div className={styles.scanlines} />
+      <div className={styles.glow} />
+      <div className={styles.vignette} />
 
       <div className={styles.center}>
         <div className={styles.terminal}>
