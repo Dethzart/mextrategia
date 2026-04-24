@@ -1,13 +1,15 @@
-import { useState, useLayoutEffect, useEffect } from 'react';
+import { useState, useLayoutEffect, useEffect, useRef } from 'react';
 import './Tour.css';
 
 export default function Tour({ steps, onClose }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [targetRect, setTargetRect] = useState(null);
+  const targetEl = useRef(null);
 
   const step = steps[currentStep];
 
-  const updateRect = () => {
+  useLayoutEffect(() => {
+    // 1. Find the target element
     const selectors = step.target.split(',').map(s => s.trim());
     let el = null;
     for (const sel of selectors) {
@@ -17,57 +19,57 @@ export default function Tour({ steps, onClose }) {
         break;
       }
     }
+    targetEl.current = el;
 
+    // 2. Perform smooth scroll to target
     if (el) {
       const rect = el.getBoundingClientRect();
-      
-      // Calculate global absolute position ignoring scroll initially
-      setTargetRect({
-        top: rect.top + window.scrollY,
-        left: rect.left + window.scrollX,
-        width: rect.width,
-        height: rect.height
-      });
-      
-      // Scroll exactly to target with padding
-      const yOffset = -80; // Offset for mobile headers or just breathing room
+      const yOffset = -80; 
       const y = rect.top + window.scrollY + yOffset;
       window.scrollTo({ top: y, behavior: 'smooth' });
     } else {
-      // Fallback if target is not found
       setTargetRect(null);
     }
-  };
+  }, [currentStep, step]);
 
-  useLayoutEffect(() => {
-    // Wait for smooth scroll and paint
-    const timer = setTimeout(updateRect, 100);
-    window.addEventListener('resize', updateRect);
+  // 3. Continuously track the exact screen position
+  useEffect(() => {
+    let animationFrameId;
+    
+    const updateBox = () => {
+      if (targetEl.current) {
+        const rect = targetEl.current.getBoundingClientRect();
+        setTargetRect({
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height
+        });
+      }
+    };
+
+    const loop = () => {
+      updateBox();
+      animationFrameId = requestAnimationFrame(loop);
+    };
+    loop();
+
+    window.addEventListener('resize', updateBox);
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', updateRect);
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', updateBox);
     };
   }, [currentStep, step]);
 
-  // Recalculate on actual scroll to keep spotlight glued to element
-  const [scrollY, setScrollY] = useState(window.scrollY);
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   if (!targetRect) return null;
 
-  // Render position logic (for desktop)
   const isMobile = window.innerWidth <= 768;
-  const renderTop = targetRect.top - scrollY;
-  const renderLeft = targetRect.left - window.scrollX;
+  const renderTop = targetRect.top;
+  const renderLeft = targetRect.left;
 
   // Tooltip positioning for desktop
   let tooltipTop = renderTop + targetRect.height + 16;
   if (tooltipTop + 200 > window.innerHeight) {
-    // Show above if it overflows bottom
     tooltipTop = renderTop - 200;
   }
 
