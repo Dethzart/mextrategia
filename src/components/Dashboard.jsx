@@ -40,6 +40,11 @@ const TOUR_STEPS = [
     target: '.formula-panel',
     title: 'Transparencia Algorítmica',
     content: 'El panel es transparente. Puedes consultar la fórmula matemática que calcula el daño y dejar tu postura en el registro inmutable.',
+  },
+  {
+    target: '.topbar',
+    title: 'Galería de Intervenciones',
+    content: 'Usa este menú de navegación superior para acceder a la Galería, donde encontrarás el registro histórico y las evidencias de las corporaciones ya intervenidas.',
   }
 ];
 
