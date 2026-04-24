@@ -200,7 +200,7 @@ export default function Pt2() {
                     {fmt(elapsed)}{duration > 0 && ` / ${fmt(duration)}`}
                   </div>
                   <div className={styles.bubbleTime} style={{ marginTop: 0 }}>
-                    <span className={styles.bubbleTimeText}>{getTime()}</span>
+                    <span className={styles.bubbleTimeText}>{clockTime}</span>
                     <span className={`${styles.bubbleCheck} ${styles.bubbleCheckRead}`}>&#10003;&#10003;</span>
                   </div>
                 </div>
