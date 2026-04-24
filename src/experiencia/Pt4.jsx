@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Pt4.module.css';
 import { playPop } from '../lib/sfx';
 import useThemeColor from '../lib/useThemeColor';
-import useThemeColor from '../lib/useThemeColor';
 
 function getClockTime() {
   return new Date().toLocaleTimeString('es-MX', {
