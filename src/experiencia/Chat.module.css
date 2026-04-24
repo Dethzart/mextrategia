@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-  background: #0b141a;
+  background: #efeae2;
 }
 
 /* ── Email notification overlay (slides in after voice note) ── */
@@ -81,25 +81,28 @@
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: #1f2c33;
-  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+  background: #f0f2f5;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
   flex-shrink: 0;
   padding-top: 46px;
 }
 
 .backArrow {
   font-size: 20px;
-  color: #25D366;
+  color: #008069;
   margin-right: -2px;
 }
 
-.avatar {
+.avatarWrapper {
   position: relative;
+  flex-shrink: 0;
+}
+
+.avatar {
   width: 38px;
   height: 38px;
   border-radius: 50%;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .avatar img {
@@ -129,19 +132,19 @@
 .headerName {
   font-size: 15px;
   font-weight: 500;
-  color: #fff;
+  color: #111b21;
   letter-spacing: -0.01em;
 }
 
 .headerSub {
   font-size: 11px;
-  color: #25D366;
+  color: #008069;
 }
 
 .headerIcons {
   display: flex;
   gap: 18px;
-  color: rgba(255,255,255,0.6);
+  color: #54656f;
   font-size: 17px;
 }
 
@@ -153,22 +156,34 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  background: #0b141a;
+  background: #efeae2;
   background-image:
-    radial-gradient(circle at 25% 35%, rgba(37,211,102,0.03) 0%, transparent 60%),
-    radial-gradient(circle at 75% 70%, rgba(37,211,102,0.02) 0%, transparent 60%);
+    radial-gradient(circle at 25% 35%, rgba(0,128,105,0.03) 0%, transparent 60%),
+    radial-gradient(circle at 75% 70%, rgba(0,128,105,0.02) 0%, transparent 60%);
 }
 
 .messages::-webkit-scrollbar { width: 2px; }
 .messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
+.dateDivider {
+  align-self: center;
+  background: #e1e8ed;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #54656f;
+  margin: 10px 0;
+}
+
 /* ── Bubble ── */
 .bubble {
   align-self: flex-start;
-  background: #1e2c33;
+  background: #fff;
   border-radius: 0 10px 10px 10px;
   padding: 7px 10px 5px 10px;
   max-width: 78%;
+  box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
   animation: popIn 0.2s ease-out both;
   margin-top: 3px;
   position: relative;
@@ -182,7 +197,7 @@
   left: -6px;
   width: 0;
   height: 0;
-  border-top: 6px solid #1e2c33;
+  border-top: 6px solid #fff;
   border-left: 6px solid transparent;
 }
 
@@ -194,7 +209,7 @@
 .bubbleText {
   display: block;
   font-size: 14px;
-  color: rgba(255,255,255,0.92);
+  color: #111b21;
   line-height: 1.45;
   word-break: break-word;
 }
@@ -209,20 +224,25 @@
 
 .bubbleTimeText {
   font-size: 10px;
-  color: rgba(255,255,255,0.38);
+  color: #667781;
 }
 
 .bubbleCheck {
   font-size: 11px;
-  color: #34b7f1;
+  color: #8696a0;
+}
+
+.bubbleCheckRead {
+  color: #53bdeb;
 }
 
 /* ── Typing ── */
 .typingBubble {
   align-self: flex-start;
-  background: #1e2c33;
+  background: #fff;
   border-radius: 0 10px 10px 10px;
   padding: 10px 14px;
+  box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
   animation: popIn 0.2s ease-out both;
   position: relative;
 }
@@ -234,7 +254,7 @@
   left: -6px;
   width: 0;
   height: 0;
-  border-top: 6px solid #1e2c33;
+  border-top: 6px solid #fff;
   border-left: 6px solid transparent;
 }
 
@@ -246,19 +266,19 @@
 }
 
 .typingDots span {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.45);
-  animation: bounce 1.2s infinite ease-in-out;
+  background: #8696a0;
+  animation: typingBounce 1.4s infinite ease-in-out both;
 }
-.typingDots span:nth-child(1) { animation-delay: 0s; }
-.typingDots span:nth-child(2) { animation-delay: 0.2s; }
-.typingDots span:nth-child(3) { animation-delay: 0.4s; }
+.typingDots span:nth-child(1) { animation-delay: -0.32s; }
+.typingDots span:nth-child(2) { animation-delay: -0.16s; }
+.typingDots span:nth-child(3) { animation-delay: 0s; }
 
-@keyframes bounce {
-  0%, 60%, 100% { transform: translateY(0);    opacity: 0.4; }
-  30%            { transform: translateY(-5px); opacity: 1; }
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
 }
 
 /* ── System message (missed call etc) ── */
@@ -269,20 +289,21 @@
 
 .systemMsg span {
   display: block;
-  background: rgba(17,27,33,0.8);
+  background: #e1e8ed;
   border-radius: 8px;
   padding: 5px 12px;
   font-size: 11px;
-  color: rgba(255,255,255,0.5);
+  color: #54656f;
   letter-spacing: 0.02em;
 }
 
 /* ── Voice note bubble ── */
 .voiceBubble {
   align-self: flex-start;
-  background: #1e2c33;
+  background: #fff;
   border-radius: 0 10px 10px 10px;
   padding: 10px 10px 8px;
+  box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -297,7 +318,7 @@
   position: absolute;
   top: 0; left: -6px;
   width: 0; height: 0;
-  border-top: 6px solid #1e2c33;
+  border-top: 6px solid #fff;
   border-left: 6px solid transparent;
 }
 
@@ -305,7 +326,7 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #25D366;
+  background: #008069;
   border: none;
   color: #fff;
   font-size: 14px;
@@ -321,7 +342,6 @@
 .voiceWaveform {
   display: flex;
   align-items: center;
-  gap: 2px;
   flex: 1;
   height: 28px;
 }
@@ -329,12 +349,13 @@
 .voiceBar {
   flex: 1;
   min-height: 3px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 1px;
-  transition: background 0.2s;
+  background: #cbd3d8;
+  border-radius: 2px;
+  margin: 0 1px;
+  transition: height 0.08s ease, background 0.2s ease;
 }
 
-.voiceBarPlayed { background: #25D366; }
+.voiceBarPlayed { background: #53bdeb; }
 
 .voiceBarLive {
   animation: waveAnim 0.6s ease-in-out infinite alternate;
@@ -347,10 +368,92 @@
 
 .voiceTimer {
   font-size: 10px;
-  color: rgba(255,255,255,0.4);
+  color: #667781;
   white-space: nowrap;
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
 }
 
-.voiceTimerTotal { color: rgba(255,255,255,0.2); }
+.voiceTimerTotal { color: #8696a0; }
+
+/* ── Chat Input Bar ── */
+.chatInputBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 18px;
+  background: #f0f2f5;
+  border-top: 0.5px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.chatInputPlus {
+  font-size: 24px;
+  color: #54656f;
+  cursor: pointer;
+  line-height: 1;
+  padding-bottom: 4px;
+}
+
+.chatInputArea {
+  flex: 1;
+  background: #fff;
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 15px;
+  color: #8696a0;
+  box-shadow: 0 1px 0.5px rgba(11,20,26,.05);
+}
+
+.chatInputIcon {
+  font-size: 18px;
+  color: #54656f;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.bubbleOld {
+  align-self: flex-start;
+  background: #fff;
+  border-radius: 0 10px 10px 10px;
+  padding: 7px 10px 5px 10px;
+  max-width: 78%;
+  box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
+  margin-top: 3px;
+  position: relative;
+}
+
+.bubbleOld::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-top: 6px solid #fff;
+  border-left: 6px solid transparent;
+}
+
+.voiceBubbleOld {
+  align-self: flex-start;
+  background: #fff;
+  border-radius: 0 10px 10px 10px;
+  padding: 10px 10px 8px;
+  box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 72%;
+  position: relative;
+  margin-top: 3px;
+}
+
+.voiceBubbleOld::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -6px;
+  width: 0; height: 0;
+  border-top: 6px solid #fff;
+  border-left: 6px solid transparent;
+}

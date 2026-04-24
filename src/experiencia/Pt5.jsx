@@ -18,6 +18,18 @@ export default function Pt5() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsed, setElapsed]     = useState(0);
   const [duration, setDuration]   = useState(0);
+  const [randomHeights, setRandomHeights] = useState(BAR_HEIGHTS);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      setRandomHeights(BAR_HEIGHTS);
+      return;
+    }
+    const t = setInterval(() => {
+      setRandomHeights(BAR_HEIGHTS.map(h => h * (0.4 + Math.random() * 0.8)));
+    }, 80);
+    return () => clearInterval(t);
+  }, [isPlaying]);
 
   useEffect(() => {
     const audio = new Audio(AUDIO_SRC);
@@ -71,11 +83,11 @@ export default function Pt5() {
           </button>
 
           <div className={styles.waveform}>
-            {BAR_HEIGHTS.map((h, i) => (
+            {randomHeights.map((h, i) => (
               <div
                 key={i}
-                className={`${styles.bar} ${i / BAR_COUNT < progress ? styles.barPlayed : ''} ${isPlaying ? styles.barLive : ''}`}
-                style={{ height: `${h * 100}%`, animationDelay: `${(i % 6) * 0.1}s` }}
+                className={`${styles.bar} ${i / BAR_COUNT < progress ? styles.barPlayed : ''}`}
+                style={{ height: `${h * 100}%` }}
               />
             ))}
           </div>

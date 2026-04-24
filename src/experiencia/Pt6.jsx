@@ -37,10 +37,10 @@ export default function Pt6() {
       <div className={`${styles.emailCard} ${visible ? styles.emailCardVisible : ''}`}>
         {/* Sender row */}
         <div className={styles.senderRow}>
-          <div className={styles.senderAvatar}>D</div>
+          <div className={styles.senderAvatar}>M</div>
           <div className={styles.senderInfo}>
-            <div className={styles.senderName}>Dethz Sagrav</div>
-            <div className={styles.senderAddr}>dethz@mextrategia.art</div>
+            <div className={styles.senderName}>Mextrategia</div>
+            <div className={styles.senderAddr}>hola@mextrategia.art</div>
           </div>
           <div className={styles.emailTime}>{getTime()}</div>
         </div>
@@ -70,10 +70,9 @@ export default function Pt6() {
           Acceder al Panel →
         </a>
 
-        <div className={styles.signature}>
-          — MextrategIA<br />
-          <span className={styles.sigUrl}>mextrategia.art</span>
-        </div>
+        <a href="/" style={{ display: 'block', textAlign: 'center', marginTop: 30, fontSize: 13, color: '#888', textDecoration: 'none', animation: 'fadeUp 0.5s ease both', animationDelay: '2.2s' }}>
+          mextrategia.art
+        </a>
       </div>
     </div>
   );

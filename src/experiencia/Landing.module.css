@@ -1,11 +1,10 @@
 .root {
   position: fixed;
   inset: 0;
-  background: var(--exp-bg);
+  background: var(--bg-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-mono);
 }
 
 .center {
@@ -15,35 +14,13 @@
   gap: 40px;
 }
 
-/* ── Boot lines ── */
-.terminal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.active {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: var(--exp-accent);
-  text-transform: uppercase;
-}
-
-.dimmed {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: rgba(201,168,76,0.25);
-  text-transform: uppercase;
-}
-
 /* ── CTA ── */
 .cta {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  animation: fadeUp 0.8s ease-out both;
+  gap: 16px;
+  animation: fadeUp 1.2s ease-out both;
 }
 
 @keyframes fadeUp {
@@ -51,36 +28,52 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.title {
-  font-size: 13px;
-  letter-spacing: 0.4em;
-  color: var(--exp-text);
+.logo {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: 4px;
+  color: var(--text-primary);
   font-weight: 400;
   text-transform: uppercase;
 }
 
 .subtitle {
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  color: var(--exp-muted);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
   text-transform: uppercase;
+  font-weight: 500;
 }
-
+.watermark {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: rgba(28, 28, 30, 0.25);
+  font-weight: 500;
+  pointer-events: none;
+}
 .btnStart {
-  margin-top: 20px;
+  margin-top: 32px;
   background: none;
-  border: 1px solid var(--exp-border);
-  color: var(--exp-muted);
+  border: 1px solid var(--border-accent);
+  color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 9px;
-  letter-spacing: 0.3em;
+  letter-spacing: 3px;
   padding: 12px 32px;
   cursor: pointer;
   text-transform: uppercase;
-  transition: border-color 0.2s, color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .btnStart:hover {
-  border-color: var(--exp-accent);
-  color: var(--exp-accent);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
 }

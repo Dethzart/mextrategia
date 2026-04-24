@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Pt4.module.css';
+import { playPop } from '../lib/sfx';
 
 function getClockTime() {
   return new Date().toLocaleTimeString('es-MX', {
@@ -27,7 +28,10 @@ export default function Pt4() {
   }, []);
 
   useEffect(() => {
-    const t = setTimeout(() => setShowNotif(true), 1400);
+    const t = setTimeout(() => {
+      setShowNotif(true);
+      playPop();
+    }, 1400);
     return () => clearTimeout(t);
   }, []);
 

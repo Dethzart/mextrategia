@@ -72,8 +72,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #1a1916;
-  color: #c9a84c;
+  background: #111b21;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,8 +153,8 @@
 /* ── CTA button ── */
 .ctaBtn {
   display: block;
-  background: #1a1916;
-  color: #c9a84c;
+  background: #111b21;
+  color: #fff;
   text-decoration: none;
   text-align: center;
   padding: 14px 20px;
@@ -180,6 +180,6 @@
 }
 
 .sigUrl {
-  color: #c9a84c;
+  color: #111b21;
   font-weight: 500;
 }

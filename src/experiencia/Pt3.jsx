@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Chat.module.css';
 import missedStyles from './Pt3.module.css';
+import { playPop } from '../lib/sfx';
 
 const MESSAGES = [
   { text: 'No importa que no hayas contestado.', delay: 2200 },
@@ -33,6 +34,7 @@ export default function Pt3() {
         if (cancelled) return;
         setTyping(false);
         setVisible(v => [...v, msg.text]);
+        playPop();
         await wait(500);
       }
       if (!cancelled) {
@@ -87,7 +89,7 @@ export default function Pt3() {
             <span className={styles.bubbleText}>{text}</span>
             <div className={styles.bubbleTime}>
               <span className={styles.bubbleTimeText}>{getTime()}</span>
-              <span className={styles.bubbleCheck}>✓✓</span>
+              <span className={`${styles.bubbleCheck} ${styles.bubbleCheckRead}`}>✓✓</span>
             </div>
           </div>
         ))}
@@ -97,6 +99,13 @@ export default function Pt3() {
           </div>
         )}
         <div ref={bottomRef} />
+      </div>
+
+      <div className={styles.chatInputBar}>
+        <div className={styles.chatInputPlus}>+</div>
+        <div className={styles.chatInputArea}>Mensaje</div>
+        <div className={styles.chatInputIcon}>📷</div>
+        <div className={styles.chatInputIcon}>🎤</div>
       </div>
     </div>
   );
