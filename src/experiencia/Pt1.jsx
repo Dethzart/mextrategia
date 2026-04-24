@@ -2,64 +2,28 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Pt1.module.css';
 
-function useRingtone(active) {
-  useEffect(() => {
-    if (!active) return;
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-
-    function burst(t, dur) {
-      [440, 480].forEach(freq => {
-        const osc = ctx.createOscillator();
-        const g   = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freq;
-        g.gain.setValueAtTime(0, t);
-        g.gain.linearRampToValueAtTime(0.18, t + 0.03);
-        g.gain.setValueAtTime(0.18, t + dur - 0.05);
-        g.gain.linearRampToValueAtTime(0, t + dur);
-        osc.connect(g);
-        g.connect(ctx.destination);
-        osc.start(t);
-        osc.stop(t + dur);
-      });
-    }
-
-    function schedule() {
-      const now = ctx.currentTime + 0.05;
-      for (let i = 0; i < 20; i++) {
-        const b = now + i * 4.0;
-        burst(b, 0.4);
-        burst(b + 0.5, 0.4);
-      }
-    }
-
-    if (ctx.state === 'running') {
-      schedule();
-    } else {
-      ctx.resume().then(schedule);
-      const unlock = () => { ctx.resume().then(schedule); };
-      document.addEventListener('click',      unlock, { once: true });
-      document.addEventListener('touchstart', unlock, { once: true });
-    }
-
-    return () => { ctx.close().catch(() => {}); };
-  }, [active]);
-}
-
 export default function Pt1() {
   const navigate = useNavigate();
-  const audioRef = useRef(null);
-  const timerRef = useRef(null);
+  const ringtoneRef = useRef(null);
+  const audioRef    = useRef(null);
+  const timerRef    = useRef(null);
 
-  const [phase, setPhase]               = useState('ringing');
-  const [choice, setChoice]             = useState(null);
-  const [callTime, setCallTime]         = useState(0);
-  const [showEndMessage, setShowEndMessage] = useState(false);
+  const [phase, setPhase]   = useState('ringing');
+  const [choice, setChoice] = useState(null);
+  const [callTime, setCallTime] = useState(0);
 
-  useRingtone(phase === 'ringing');
+  // ── Ringtone (real MP3, loops during ringing) ──
+  useEffect(() => {
+    if (phase !== 'ringing') return;
+    const audio = new Audio('/acto1/ringtone.mp3');
+    ringtoneRef.current = audio;
+    audio.loop   = true;
+    audio.volume = 0.75;
+    audio.play().catch(() => {});
+    return () => { audio.pause(); audio.currentTime = 0; };
+  }, [phase]);
 
+  // ── Call timer ──
   useEffect(() => {
     if (phase !== 'answered') return;
     timerRef.current = setInterval(() => setCallTime(t => t + 1), 1000);
@@ -85,11 +49,7 @@ export default function Pt1() {
       clearTimeout(hardTimer);
       durationTimer = setTimeout(finish, (audio.duration + 1) * 1000);
     });
-    audio.play().catch(() => {
-      clearTimeout(hardTimer);
-      clearTimeout(durationTimer);
-      setTimeout(finish, 300);
-    });
+    audio.play().catch(() => { clearTimeout(hardTimer); clearTimeout(durationTimer); setTimeout(finish, 300); });
   }, []);
 
   const handleAnswer = useCallback(() => {
@@ -97,43 +57,30 @@ export default function Pt1() {
     setChoice('answered');
     playAudio('/acto1/Audio1A.mp3', () => {
       clearInterval(timerRef.current);
-      setPhase('ended');
-      setShowEndMessage(true);
+      navigate('/pt2');
     });
-  }, [playAudio]);
+  }, [playAudio, navigate]);
 
   const handleIgnore = useCallback(() => {
     setPhase('ignoring');
     setChoice('ignored');
     setTimeout(() => {
       setPhase('ignored');
-      playAudio('/acto1/Audio1B.mp3', () => {
-        setPhase('ended');
-        setShowEndMessage(true);
-      });
+      playAudio('/acto1/Audio1B.mp3', () => navigate('/pt3'));
     }, 3000);
-  }, [playAudio]);
-
-  const handleContinue = useCallback(() => {
-    navigate(choice === 'answered' ? '/pt2' : '/pt3');
-  }, [navigate, choice]);
+  }, [playAudio, navigate]);
 
   function fmt(s) {
     return `${Math.floor(s / 60).toString().padStart(2, '0')}:${(s % 60).toString().padStart(2, '0')}`;
   }
 
-  const phaseClass = styles[`phase_${phase}`] || '';
-
   return (
-    <div className={`${styles.root} ${phaseClass} ${phase === 'ignored' ? styles.vibrating : ''}`}>
-      <div className={styles.scanlines} />
-      <div className={styles.bgGlow} />
+    <div className={`${styles.root} ${styles[`phase_${phase}`] || ''} ${phase === 'ignored' ? styles.vibrating : ''}`}>
 
-      {/* ── RINGING ── */}
       {phase === 'ringing' && (
         <div className={styles.callUI}>
           <div className={styles.callTop}>
-            <div className={styles.callStatus}>// llamada entrante</div>
+            <div className={styles.callStatus}>llamada entrante</div>
             <div className={styles.avatarWrap}>
               <div className={styles.ring1} />
               <div className={styles.ring2} />
@@ -159,44 +106,28 @@ export default function Pt1() {
         </div>
       )}
 
-      {/* ── IGNORING (transition) ── */}
       {phase === 'ignoring' && (
         <div className={styles.centerOverlay}>
-          <span className={styles.statusText}>// ignorando llamada...</span>
+          <span className={styles.statusText}>ignorando...</span>
         </div>
       )}
 
-      {/* ── IGNORED (playing audio) ── */}
-      {phase === 'ignored' && !showEndMessage && (
+      {phase === 'ignored' && (
         <div className={styles.centerOverlay}>
           <div className={styles.missedIcon}>✕</div>
-          <span className={styles.statusText}>// llamada perdida</span>
+          <span className={styles.statusText}>llamada perdida</span>
         </div>
       )}
 
-      {/* ── ANSWERED (call in progress) ── */}
-      {phase === 'answered' && !showEndMessage && (
+      {phase === 'answered' && (
         <div className={styles.activeCallUI}>
-          <div className={styles.avatar} style={{ width: 72, height: 72 }}>
+          <div className={styles.avatar}>
             <img src="/acto1/espectro.png" alt="ESPECTRO" />
           </div>
           <div className={styles.callerName}>ESPECTRO</div>
-          <div className={styles.callConnected}>// conectado</div>
           <div className={styles.callTimer}>{fmt(callTime)}</div>
         </div>
       )}
-
-      {/* ── END ── */}
-      {showEndMessage && (
-        <div className={styles.endOverlay}>
-          <div className={styles.endText}>// mensaje recibido</div>
-          <button className={styles.btnContinue} onClick={handleContinue}>
-            [ CONTINUAR → ]
-          </button>
-        </div>
-      )}
-
-      <div className={styles.watermark}>Espectro invisible para desafiar</div>
     </div>
   );
 }

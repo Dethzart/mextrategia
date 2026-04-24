@@ -1,91 +1,51 @@
 .root {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  background: #000;
+  background: var(--exp-bg);
   overflow: hidden;
-  font-family: 'Courier New', Courier, monospace;
-  transition: background 1.2s ease;
+  font-family: var(--font-mono);
+  transition: background 1s ease;
 }
 
-/* ── Phase-specific backgrounds ── */
-.phase_ringing  { background: #000; }
-.phase_ignoring { background: #050000; }
-.phase_ignored  { background: radial-gradient(ellipse at center, #120000 0%, #000 70%); }
-.phase_answered { background: radial-gradient(ellipse at center, #001800 0%, #000 70%); }
-.phase_ended    { background: #000; }
+.phase_ignoring { background: #080205; }
+.phase_ignored  { background: #0c0305; }
+.phase_answered { background: #050805; }
 
-/* ── Scanlines overlay ── */
-.scanlines {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(0, 0, 0, 0.15) 3px,
-    rgba(0, 0, 0, 0.15) 4px
-  );
-  pointer-events: none;
-}
-
-/* ── Background glow (changes color with phase) ── */
-.bgGlow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  translate: -50% -50%;
-  width: 80vmax;
-  height: 80vmax;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.phase_ringing  .bgGlow { background: radial-gradient(circle, rgba(0,255,65,0.04) 0%, transparent 65%); animation: glowPulse 2s ease-in-out infinite; }
-.phase_answered .bgGlow { background: radial-gradient(circle, rgba(0,255,65,0.06) 0%, transparent 65%); }
-.phase_ignored  .bgGlow { background: radial-gradient(circle, rgba(200,30,30,0.06) 0%, transparent 65%); }
-
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.6; }
-  50%       { opacity: 1; }
-}
-
-/* ── Incoming call UI ── */
+/* ── Call UI ── */
 .callUI {
   position: absolute;
   inset: 0;
-  z-index: 10;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 72px 0 56px;
+  padding: 80px 0 64px;
 }
 
 .callTop {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
 }
 
 .callStatus {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  color: #00FF41;
-  animation: blink 1.4s step-end infinite;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--exp-accent);
+  text-transform: uppercase;
+  animation: blink 1.6s step-end infinite;
 }
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
+  50%       { opacity: 0.25; }
 }
 
-/* ── Avatar + ripple rings ── */
+/* ── Avatar + rings ── */
 .avatarWrap {
   position: relative;
-  width: 96px;
-  height: 96px;
+  width: 88px;
+  height: 88px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,27 +53,26 @@
 
 .ring1, .ring2, .ring3 {
   position: absolute;
-  width: 96px;
-  height: 96px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 255, 65, 0.35);
-  animation: ripple 2.4s ease-out infinite;
+  border: 1px solid rgba(201,168,76,0.28);
+  animation: ripple 2.6s ease-out infinite;
 }
-.ring2 { animation-delay: 0.8s; }
-.ring3 { animation-delay: 1.6s; }
+.ring2 { animation-delay: 0.87s; }
+.ring3 { animation-delay: 1.73s; }
 
 @keyframes ripple {
-  0%   { transform: scale(1);   opacity: 0.6; }
-  100% { transform: scale(3.8); opacity: 0;   }
+  0%   { transform: scale(1);   opacity: 0.55; }
+  100% { transform: scale(3.6); opacity: 0;    }
 }
 
 .avatar {
-  width: 96px;
-  height: 96px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--exp-border);
   flex-shrink: 0;
   z-index: 1;
 }
@@ -122,27 +81,30 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: grayscale(0.3);
 }
 
 .callerName {
-  font-size: 30px;
+  font-size: 22px;
+  letter-spacing: 0.22em;
+  color: var(--exp-text);
   font-weight: 400;
-  letter-spacing: 0.14em;
-  color: #fff;
+  text-transform: uppercase;
 }
 
 .callerSub {
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--exp-muted);
+  text-transform: uppercase;
 }
 
-/* ── Call action buttons ── */
+/* ── Buttons ── */
 .callActions {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 0 40px;
+  padding: 0 48px;
 }
 
 .btnIgnore, .btnAnswer {
@@ -152,67 +114,36 @@
   gap: 12px;
   background: none;
   border: none;
-  color: #fff;
   cursor: pointer;
 }
 
 .btnIcon {
-  width: 68px;
-  height: 68px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 22px;
   transition: transform 0.1s, opacity 0.15s;
 }
-
-.btnIgnore .btnIcon  { background: rgba(200, 30, 30, 0.9); }
-.btnAnswer .btnIcon  { background: #00FF41; color: #000; }
+.btnIgnore .btnIcon { background: rgba(180,30,30,0.85); color: rgba(255,255,255,0.9); }
+.btnAnswer .btnIcon { background: var(--exp-accent);    color: #0d0d10; }
 .btnIgnore:active .btnIcon,
-.btnAnswer:active .btnIcon { transform: scale(0.92); opacity: 0.85; }
+.btnAnswer:active .btnIcon { transform: scale(0.9); opacity: 0.8; }
 
 .btnLabel {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.55);
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  color: var(--exp-muted);
+  text-transform: uppercase;
 }
 
-/* ── Center overlay (ignoring / ignored) ── */
+/* ── Center overlay ── */
 .centerOverlay {
   position: absolute;
   inset: 0;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
-
-.missedIcon {
-  font-size: 40px;
-  color: rgba(200, 30, 30, 0.8);
-  animation: pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
-}
-
-.statusText {
-  font-size: 12px;
-  letter-spacing: 0.22em;
-  color: rgba(255, 255, 255, 0.45);
-}
-
-/* ── Active call ── */
-.activeCallUI {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -220,85 +151,54 @@
   gap: 14px;
 }
 
-.callConnected {
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: #00FF41;
+.missedIcon {
+  font-size: 32px;
+  color: rgba(180,30,30,0.75);
+  animation: pulse 1.3s ease-in-out infinite;
 }
 
-.callTimer {
-  font-size: 40px;
-  letter-spacing: 0.06em;
-  color: #fff;
-  font-variant-numeric: tabular-nums;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
 }
 
-/* ── End overlay ── */
-.endOverlay {
+.statusText {
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--exp-muted);
+  text-transform: uppercase;
+}
+
+/* ── Active call ── */
+.activeCallUI {
   position: absolute;
   inset: 0;
-  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 32px;
-  background: rgba(0, 0, 0, 0.6);
-  animation: fadeIn 0.5s ease-out both;
+  gap: 16px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+.callTimer {
+  font-size: 36px;
+  letter-spacing: 0.06em;
+  color: var(--exp-text);
+  font-variant-numeric: tabular-nums;
 }
 
-.endText {
-  font-size: 12px;
-  letter-spacing: 0.24em;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.btnContinue {
-  background: none;
-  border: 1px solid #00FF41;
-  border-radius: 0;
-  color: #00FF41;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 13px;
-  letter-spacing: 0.22em;
-  padding: 13px 30px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.btnContinue:hover { background: #00FF41; color: #000; }
-
-/* ── Watermark ── */
-.watermark {
-  position: absolute;
-  bottom: 18px;
-  left: 16px;
-  z-index: 20;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.18);
-  text-transform: uppercase;
-  pointer-events: none;
-}
-
-/* ── Vibrate (ignored phase) ── */
+/* ── Vibrate ── */
 @keyframes vibrate {
-  0%   { transform: translate(0, 0); }
-  10%  { transform: translate(-3px,  1px); }
-  20%  { transform: translate( 3px, -1px); }
-  30%  { transform: translate(-4px,  2px); }
-  40%  { transform: translate( 4px, -2px); }
-  50%  { transform: translate(-3px,  1px); }
-  60%  { transform: translate( 3px,  2px); }
-  70%  { transform: translate(-2px, -2px); }
-  80%  { transform: translate( 2px,  1px); }
-  90%  { transform: translate(-1px, -1px); }
-  100% { transform: translate(0, 0); }
+  0%   { transform: translate(0,0); }
+  10%  { transform: translate(-3px, 1px); }
+  20%  { transform: translate(3px,-1px); }
+  30%  { transform: translate(-4px, 2px); }
+  40%  { transform: translate(4px,-2px); }
+  50%  { transform: translate(-3px, 1px); }
+  60%  { transform: translate(3px, 2px); }
+  70%  { transform: translate(-2px,-2px); }
+  80%  { transform: translate(2px, 1px); }
+  90%  { transform: translate(-1px,-1px); }
+  100% { transform: translate(0,0); }
 }
-
 .vibrating { animation: vibrate 0.08s linear infinite; }

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Chat.module.css';
 
-// Narrativa: path de quien CONTESTÓ la llamada
 const MESSAGES = [
   { text: '¿Por qué contestaste?', delay: 1800 },
   { text: 'Todos contestan al final.', delay: 3200 },
@@ -14,26 +13,28 @@ export default function Pt2() {
   const navigate = useNavigate();
   const [visible, setVisible] = useState([]);
   const [typing, setTyping] = useState(false);
-  const [done, setDone] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
     async function run() {
-      for (let i = 0; i < MESSAGES.length; i++) {
+      for (const msg of MESSAGES) {
         if (cancelled) return;
         setTyping(true);
-        await wait(MESSAGES[i].delay);
+        await wait(msg.delay);
         if (cancelled) return;
         setTyping(false);
-        setVisible(v => [...v, MESSAGES[i].text]);
-        await wait(600);
+        setVisible(v => [...v, msg.text]);
+        await wait(500);
       }
-      if (!cancelled) setDone(true);
+      if (!cancelled) {
+        await wait(2000);
+        if (!cancelled) navigate('/pt4');
+      }
     }
     run();
     return () => { cancelled = true; };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -62,16 +63,6 @@ export default function Pt2() {
         {typing && <TypingBubble />}
         <div ref={bottomRef} />
       </div>
-
-      {done && (
-        <div className={styles.footer}>
-          <button className={styles.btnContinue} onClick={() => navigate('/pt4')}>
-            [ ABRIR NOTIFICACIÓN → ]
-          </button>
-        </div>
-      )}
-
-      <div className={styles.watermark}>Espectro invisible para desafiar</div>
     </div>
   );
 }
@@ -79,17 +70,12 @@ export default function Pt2() {
 function TypingBubble() {
   return (
     <div className={styles.bubble}>
-      <div className={styles.typingDots}>
-        <span /><span /><span />
-      </div>
+      <div className={styles.typingDots}><span /><span /><span /></div>
     </div>
   );
 }
 
-function wait(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 function getTime() {
   return new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false });
 }

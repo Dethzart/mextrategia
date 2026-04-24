@@ -27,6 +27,14 @@
   --font-serif: Georgia, 'Times New Roman', serif;
   --gap:    20px;
   --radius: 0px;
+
+  /* ── Experiencia (dark, editorial) ── */
+  --exp-bg:      #060608;
+  --exp-bg2:     #0d0d10;
+  --exp-text:    rgba(255,255,255,0.82);
+  --exp-muted:   rgba(255,255,255,0.32);
+  --exp-accent:  #c9a84c;
+  --exp-border:  rgba(201,168,76,0.14);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -61,6 +69,12 @@ a {
 a:hover { opacity: 0.55; }
 
 @keyframes pulse-glow  { 0%,100%{opacity:0.25} 50%{opacity:0.9} }
+
+@media (min-width: 600px) {
+  .exp-phone-frame {
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.08), 0 32px 96px rgba(0,0,0,0.85);
+  }
+}
 @keyframes ticker-scroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 @keyframes flash-green { 0%{opacity:1} 100%{opacity:0.5} }
 

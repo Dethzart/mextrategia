@@ -63,18 +63,34 @@ export default function App() {
   const navigate     = useNavigate();
   const location     = useLocation();
 
-  // Experiencia fullscreen — sin shell (landing + actos)
+  // Experiencia — sin shell, phone frame en desktop
   const isExperiencia = location.pathname === '/' || location.pathname.startsWith('/pt');
   if (isExperiencia) {
     return (
-      <Routes>
-        <Route path="/"    element={<Landing />} />
-        <Route path="/pt1" element={<Pt1 />} />
-        <Route path="/pt2" element={<Pt2 />} />
-        <Route path="/pt3" element={<Pt3 />} />
-        <Route path="/pt4" element={<Pt4 />} />
-        <Route path="/pt5" element={<Pt5 />} />
-      </Routes>
+      <div style={{
+        position: 'fixed', inset: 0,
+        background: '#030305',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <div style={{
+          position: 'relative',
+          width: '100%', height: '100%',
+          maxWidth: 430, maxHeight: 932,
+          overflow: 'hidden',
+          boxShadow: 'none',
+        }}
+          className="exp-phone-frame"
+        >
+          <Routes>
+            <Route path="/"    element={<Landing />} />
+            <Route path="/pt1" element={<Pt1 />} />
+            <Route path="/pt2" element={<Pt2 />} />
+            <Route path="/pt3" element={<Pt3 />} />
+            <Route path="/pt4" element={<Pt4 />} />
+            <Route path="/pt5" element={<Pt5 />} />
+          </Routes>
+        </div>
+      </div>
     );
   }
 

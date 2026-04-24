@@ -3,16 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Pt5.module.css';
 
 const AUDIO_SRC = '/acto1/Audio2VoiceNote.mp3';
-const BAR_COUNT = 28;
+const BAR_COUNT = 30;
+
+const BAR_HEIGHTS = Array.from({ length: BAR_COUNT }, (_, i) => {
+  const x = i / (BAR_COUNT - 1);
+  return 0.2 + 0.8 * Math.abs(Math.sin(x * Math.PI * 4.5 + 0.8) * Math.cos(x * Math.PI * 2));
+});
 
 export default function Pt5() {
   const navigate = useNavigate();
   const audioRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [done, setDone] = useState(false);
   const intervalRef = useRef(null);
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [elapsed, setElapsed]     = useState(0);
+  const [duration, setDuration]   = useState(0);
 
   useEffect(() => {
     const audio = new Audio(AUDIO_SRC);
@@ -20,14 +25,11 @@ export default function Pt5() {
     audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
     audio.addEventListener('ended', () => {
       setIsPlaying(false);
-      setDone(true);
       clearInterval(intervalRef.current);
+      setTimeout(() => navigate('/panel'), 1500);
     });
-    return () => {
-      audio.pause();
-      clearInterval(intervalRef.current);
-    };
-  }, []);
+    return () => { audio.pause(); clearInterval(intervalRef.current); };
+  }, [navigate]);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
@@ -39,9 +41,7 @@ export default function Pt5() {
     } else {
       audio.play().catch(() => {});
       setIsPlaying(true);
-      intervalRef.current = setInterval(() => {
-        setElapsed(audio.currentTime);
-      }, 250);
+      intervalRef.current = setInterval(() => setElapsed(audio.currentTime), 250);
     }
   }, [isPlaying]);
 
@@ -49,12 +49,6 @@ export default function Pt5() {
     const t = Math.floor(s);
     return `${Math.floor(t / 60)}:${(t % 60).toString().padStart(2, '0')}`;
   }
-
-  // Fake waveform heights — gives it a natural voice shape
-  const barHeights = Array.from({ length: BAR_COUNT }, (_, i) => {
-    const x = i / (BAR_COUNT - 1);
-    return 0.3 + 0.7 * Math.abs(Math.sin(x * Math.PI * 4.5 + 0.8) * Math.cos(x * Math.PI * 2));
-  });
 
   const progress = duration > 0 ? elapsed / duration : 0;
 
@@ -70,50 +64,31 @@ export default function Pt5() {
         </div>
       </div>
 
-      <div className={styles.messages}>
+      <div className={styles.body}>
         <div className={styles.voiceBubble}>
-          <button className={styles.playBtn} onClick={togglePlay} aria-label="play/pause">
+          <button className={styles.playBtn} onClick={togglePlay}>
             {isPlaying ? '⏸' : '▶'}
           </button>
 
           <div className={styles.waveform}>
-            {barHeights.map((h, i) => {
-              const played = i / BAR_COUNT < progress;
-              return (
-                <div
-                  key={i}
-                  className={`${styles.bar} ${played ? styles.barPlayed : ''} ${isPlaying ? styles.barAnimating : ''}`}
-                  style={{
-                    height: `${h * 100}%`,
-                    animationDelay: `${(i % 5) * 0.12}s`,
-                  }}
-                />
-              );
-            })}
+            {BAR_HEIGHTS.map((h, i) => (
+              <div
+                key={i}
+                className={`${styles.bar} ${i / BAR_COUNT < progress ? styles.barPlayed : ''} ${isPlaying ? styles.barLive : ''}`}
+                style={{ height: `${h * 100}%`, animationDelay: `${(i % 6) * 0.1}s` }}
+              />
+            ))}
           </div>
 
           <div className={styles.timer}>
-            <span>{fmt(elapsed)}</span>
-            {duration > 0 && <span className={styles.timerTotal}> / {fmt(duration)}</span>}
+            {fmt(elapsed)}{duration > 0 && <span className={styles.timerTotal}> / {fmt(duration)}</span>}
           </div>
         </div>
 
-        <div className={styles.tapHint}>
-          {!isPlaying && !done && <span>// toca para reproducir</span>}
-          {isPlaying && <span>// reproduciendo...</span>}
-        </div>
+        {!isPlaying && elapsed === 0 && (
+          <div className={styles.hint}>toca para reproducir</div>
+        )}
       </div>
-
-      {done && (
-        <div className={styles.footer}>
-          <div className={styles.doneText}>// nota recibida</div>
-          <button className={styles.btnContinue} onClick={() => navigate('/panel')}>
-            [ VER PANEL → ]
-          </button>
-        </div>
-      )}
-
-      <div className={styles.watermark}>Espectro invisible para desafiar</div>
     </div>
   );
 }

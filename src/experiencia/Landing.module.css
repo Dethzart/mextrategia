@@ -1,154 +1,86 @@
 .root {
   position: fixed;
   inset: 0;
-  background: #000;
-  overflow: hidden;
-  font-family: 'Courier New', Courier, monospace;
+  background: var(--exp-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
 }
 
-/* ── CSS-only background ── */
-
-/* Horizontal scanlines */
-.scanlines {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(0, 0, 0, 0.18) 3px,
-    rgba(0, 0, 0, 0.18) 4px
-  );
-  pointer-events: none;
-}
-
-/* Pulsing green radial glow at center */
-.glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  translate: -50% -50%;
-  width: 70vmax;
-  height: 70vmax;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(0, 255, 65, 0.055) 0%,
-    rgba(0, 255, 65, 0.015) 40%,
-    transparent 70%
-  );
-  animation: glowPulse 4s ease-in-out infinite;
-  z-index: 0;
-  pointer-events: none;
-}
-
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.15); }
-}
-
-/* Dark vignette at edges */
-.vignette {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: radial-gradient(
-    ellipse at center,
-    transparent 40%,
-    rgba(0, 0, 0, 0.75) 100%
-  );
-  pointer-events: none;
-}
-
-/* ── Content ── */
 .center {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 48px;
-  padding: 32px;
+  gap: 40px;
 }
 
-/* ── Terminal boot lines ── */
+/* ── Boot lines ── */
 .terminal {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.termLine {
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  transition: color 0.4s, opacity 0.4s;
+.active {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--exp-accent);
+  text-transform: uppercase;
 }
 
-.active  { color: #00FF41; opacity: 1; }
-.dimmed  { color: rgba(0, 255, 65, 0.25); opacity: 0.6; }
+.dimmed {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: rgba(201,168,76,0.25);
+  text-transform: uppercase;
+}
 
-/* ── CTA block ── */
+/* ── CTA ── */
 .cta {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  animation: fadeUp 0.9s ease-out both;
+  gap: 12px;
+  animation: fadeUp 0.8s ease-out both;
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .title {
-  font-size: 44px;
-  letter-spacing: 0.28em;
-  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0.4em;
+  color: var(--exp-text);
   font-weight: 400;
+  text-transform: uppercase;
 }
 
 .subtitle {
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 0.18em;
-  color: rgba(255, 255, 255, 0.3);
-  text-align: center;
+  color: var(--exp-muted);
   text-transform: uppercase;
 }
 
 .btnStart {
   margin-top: 20px;
   background: none;
-  border: 1px solid #00FF41;
-  border-radius: 0;
-  color: #00FF41;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 12px;
-  letter-spacing: 0.24em;
-  padding: 15px 36px;
+  border: 1px solid var(--exp-border);
+  color: var(--exp-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  padding: 12px 32px;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
   text-transform: uppercase;
+  transition: border-color 0.2s, color 0.2s;
 }
 
 .btnStart:hover {
-  background: #00FF41;
-  color: #000;
-}
-
-/* ── Watermark ── */
-.watermark {
-  position: absolute;
-  bottom: 18px;
-  left: 16px;
-  z-index: 20;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.18);
-  text-transform: uppercase;
-  pointer-events: none;
+  border-color: var(--exp-accent);
+  color: var(--exp-accent);
 }
