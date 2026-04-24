@@ -11,12 +11,18 @@ export default function Landing() {
       '/acto1/ringtone.mp3',
       '/acto1/Audio1A.mp3',
       '/acto1/Audio1B.mp3',
-      '/acto1/Audio2VoiceNote.mp3'
+      '/acto1/Audio2VoiceNote.mp3',
+      '/acto1/espectro.png'
     ];
     assets.forEach(src => {
-      const a = new Audio();
-      a.preload = 'auto';
-      a.src = src;
+      if (src.endsWith('.png')) {
+        const img = new Image();
+        img.src = src;
+      } else {
+        const a = new Audio();
+        a.preload = 'auto';
+        a.src = src;
+      }
     });
   }, []);
 
