@@ -2,6 +2,20 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Chat.module.css';
 import { playPop, playClick, playSwoosh } from '../lib/sfx';
+import useThemeColor from '../lib/useThemeColor';
+
+function useClockTime() {
+  const [t, setT] = useState(() =>
+    new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false })
+  );
+  useEffect(() => {
+    const id = setInterval(() =>
+      setT(new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false }))
+    , 1000);
+    return () => clearInterval(id);
+  }, []);
+  return t;
+}
 
 const TEXT_MESSAGES = [
   { text: 'Escucha el audio.', delay: 1800 },
@@ -19,6 +33,7 @@ const BAR_HEIGHTS = [
 
 export default function Pt2() {
   const navigate = useNavigate();
+  const clockTime = useClockTime();
   const [visible, setVisible]         = useState([]);
   const [typing, setTyping]           = useState(false);
   const [showVoice]                   = useState(true);
