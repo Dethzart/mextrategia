@@ -65,34 +65,32 @@ export default function Pt1() {
   }, [phase, isPaused]);
 
   const playAudio = useCallback((src, onEnd) => {
-    if (audioRef.current) audioRef.current.pause();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.onended = null;
+      audioRef.current.src = '';
+    }
     const audio = new Audio(src);
     audioRef.current = audio;
-    let done = false;
-    let durationTimer;
-    const hardTimer = setTimeout(() => finish(), 30000);
-    function finish() {
-      if (done) return;
-      done = true;
-      clearTimeout(hardTimer);
-      clearTimeout(durationTimer);
-      onEnd();
-    }
-    audio.onended = finish;
-    audio.addEventListener('loadedmetadata', () => {
-      clearTimeout(hardTimer);
-      durationTimer = setTimeout(finish, (audio.duration + 1) * 1000);
-    });
+    
+    audio.onended = () => {
+      if (audioRef.current === audio) onEnd();
+    };
+    
     audio.play().catch(() => {
-      clearTimeout(hardTimer);
-      clearTimeout(durationTimer);
-      setTimeout(finish, 300);
+      setTimeout(() => {
+        if (audioRef.current === audio) onEnd();
+      }, 4000);
     });
   }, []);
 
   const handleAnswer = useCallback(() => {
     setPhase('answered');
     setSpeakerActive(true);
+    setIsPaused(false);
+    
+    if (ringtoneRef.current) ringtoneRef.current.pause();
+
     const audioFile = hasRejected ? '/acto1/Audio1B.mp3' : '/acto1/Audio1A.mp3';
     playAudio(audioFile, () => {
       clearInterval(timerRef.current);
@@ -101,9 +99,17 @@ export default function Pt1() {
   }, [playAudio, navigate, hasRejected]);
 
   const handleIgnore = useCallback(() => {
-    setPhase('ignoring');
     playClick();
+    setPhase('ignoring');
     setHasRejected(true);
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.onended = null;
+      audioRef.current.src = '';
+    }
+    if (ringtoneRef.current) ringtoneRef.current.pause();
+
     setTimeout(() => {
       setPhase('ignored');
       setTimeout(() => {
@@ -114,9 +120,17 @@ export default function Pt1() {
 
   const handleHangup = useCallback(() => {
     playClick();
-    if (audioRef.current) audioRef.current.pause();
-    clearInterval(timerRef.current);
     setPhase('ignoring');
+    setHasRejected(true);
+    setIsPaused(false);
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.onended = null;
+      audioRef.current.src = '';
+    }
+    clearInterval(timerRef.current);
+    
     setTimeout(() => {
       setPhase('ringing');
       setCallTime(0);
