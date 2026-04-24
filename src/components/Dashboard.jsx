@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import Tour from './Tour';
 import {
   corporations,
   calculatePriceWithVotes,
@@ -18,6 +19,29 @@ function getUserId() {
   return uid;
 }
 const isHumanSession = () => sessionStorage.getItem(HUMAN_KEY) === '1';
+
+const TOUR_STEPS = [
+  {
+    target: '.global-counter',
+    title: 'Visión Global',
+    content: 'Aquí monitoreas el tiempo de intervención y el precio total acumulado por todas las corporaciones basado en sus negligencias en tiempo real.',
+  },
+  {
+    target: '.domains-panel',
+    title: 'Cotización de Daños',
+    content: 'Cada empresa genera deuda constante. El costo varía dinámicamente según su valoración bursátil, historial ético y métricas laborales.',
+  },
+  {
+    target: '.ranking-panel',
+    title: 'Intervención Ciudadana',
+    content: 'Tu voto multiplica la penalización de una empresa en específico. Úsalo sabiamente para amplificar el costo de la corporación que consideres más responsable.',
+  },
+  {
+    target: '.formula-panel',
+    title: 'Transparencia Algorítmica',
+    content: 'El panel es transparente. Puedes consultar la fórmula matemática que calcula el daño y dejar tu postura en el registro inmutable.',
+  }
+];
 
 function makeChallenge() {
   const a = Math.floor(Math.random() * 15) + 3;
@@ -102,7 +126,14 @@ export default function Dashboard({ dbVotes, setDbVotes }) {
   const [humanOk,       setHumanOk]      = useState(isHumanSession);
   const [showChallenge, setShowChallenge]= useState(false);
   const [pendingAction, setPendingAction]= useState(null);
+  const [showTour,      setShowTour]     = useState(false);
   const userId = useRef(getUserId());
+
+  useEffect(() => {
+    if (localStorage.getItem('mextrategia_tour_done') !== '1') {
+      setShowTour(true);
+    }
+  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 100);
@@ -220,7 +251,7 @@ export default function Dashboard({ dbVotes, setDbVotes }) {
       </div>
 
       {/* ── Domain Tickers ── */}
-      <div className="panel">
+      <div className="panel domains-panel">
         <div className="panel-header">
           <span>Dominios Corporativos &mdash; Precio en Tiempo Real</span>
           <span className="live-dot" />
@@ -363,6 +394,15 @@ export default function Dashboard({ dbVotes, setDbVotes }) {
         </div>
       </div>
 
+      {showTour && (
+        <Tour 
+          steps={TOUR_STEPS} 
+          onClose={() => {
+            setShowTour(false);
+            localStorage.setItem('mextrategia_tour_done', '1');
+          }} 
+        />
+      )}
     </div>
   );
 }
