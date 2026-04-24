@@ -408,6 +408,7 @@ export default function Dashboard({ dbVotes, setDbVotes }) {
           onClose={() => {
             setShowTour(false);
             localStorage.setItem('mextrategia_tour_done', '1');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           }} 
         />
       )}
