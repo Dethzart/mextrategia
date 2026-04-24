@@ -42,7 +42,7 @@ const TOUR_STEPS = [
     content: 'El panel es transparente. Puedes consultar la fórmula matemática que calcula el daño y dejar tu postura en el registro inmutable.',
   },
   {
-    target: '.hamburger-wrapper, .desktop-nav',
+    target: '#tour-hamburger-btn, #tour-galeria-btn',
     title: 'Galería de Intervenciones',
     content: 'Usa el menú para acceder a la Galería, donde encontrarás el registro histórico y las evidencias de las corporaciones ya intervenidas.',
   }

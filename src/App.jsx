@@ -171,6 +171,7 @@ export default function App() {
             {routes.map(r => (
               <button
                 key={r.path}
+                id={r.path === '/galeria' ? 'tour-galeria-btn' : undefined}
                 className={currentPath === r.path ? 'active' : ''}
                 onClick={() => goTo(r.path)}
               >
@@ -185,6 +186,7 @@ export default function App() {
             </div>
             <div className="hamburger-wrapper" ref={menuRef}>
               <button
+                id="tour-hamburger-btn"
                 className={`hamburger${menuOpen ? ' open' : ''}`}
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Menú de navegación"
