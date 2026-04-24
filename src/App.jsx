@@ -211,6 +211,7 @@ export default function App() {
 
       <div className="main-content">
         <Routes>
+          <Route path="/panel"      element={<Dashboard dbVotes={dbVotes} setDbVotes={setDbVotes} />} />
           <Route path="/manifiesto" element={<Manifesto />} />
           <Route path="/galeria"    element={<Gallery />} />
           <Route path="/estado"     element={<Status />} />

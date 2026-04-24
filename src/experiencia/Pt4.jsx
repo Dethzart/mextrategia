@@ -33,19 +33,8 @@ export default function Pt4() {
 
   return (
     <div className={styles.root}>
-      {/* Blurred wallpaper background */}
       <div className={styles.wallpaper} />
       <div className={styles.overlay} />
-
-      {/* Status bar */}
-      <div className={styles.statusBar}>
-        <span className={styles.statusTime}>{time}</span>
-        <div className={styles.statusIcons}>
-          <span>▪▪▪▪</span>
-          <span>WiFi</span>
-          <span>100%</span>
-        </div>
-      </div>
 
       {/* Clock */}
       <div className={styles.clockBlock}>
@@ -57,19 +46,16 @@ export default function Pt4() {
       {showNotif && (
         <div className={styles.notifBanner} onClick={() => navigate('/pt2')}>
           <div className={styles.notifHeader}>
-            <div className={styles.notifIcon}>
-              <span className={styles.notifIconGlyph}>💬</span>
-            </div>
+            <div className={styles.notifIcon}>WA</div>
             <span className={styles.notifApp}>WhatsApp</span>
             <span className={styles.notifDot} />
             <span className={styles.notifTime}>ahora</span>
           </div>
           <div className={styles.notifSender}>Dethz Sagrav</div>
-          <div className={styles.notifPreview}>🎤 Nota de voz · 0:37</div>
+          <div className={styles.notifPreview}>&#9654; Nota de voz · 0:37</div>
         </div>
       )}
 
-      {/* Swipe hint */}
       <div className={styles.swipeHint}>Desliza para desbloquear</div>
     </div>
   );

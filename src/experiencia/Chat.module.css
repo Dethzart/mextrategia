@@ -7,6 +7,74 @@
   background: #0b141a;
 }
 
+/* ── Email notification overlay (slides in after voice note) ── */
+.emailNotif {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 50;
+  background: rgba(50,52,58,0.95);
+  backdrop-filter: blur(30px) saturate(1.8);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  border-radius: 14px;
+  padding: 11px 13px 13px;
+  border: 0.5px solid rgba(255,255,255,0.13);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  animation: slideNotif 0.5s cubic-bezier(0.34,1.3,0.64,1) both;
+}
+
+@keyframes slideNotif {
+  from { transform: translateY(-110%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.emailNotifRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.emailNotifIcon {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: #1a1916;
+  color: #c9a84c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.emailNotifApp {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  flex: 1;
+}
+
+.emailNotifTime {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+
+.emailNotifSender {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+
+.emailNotifPreview {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: -0.01em;
+}
+
 /* ── Header ── */
 .header {
   display: flex;
@@ -208,3 +276,81 @@
   color: rgba(255,255,255,0.5);
   letter-spacing: 0.02em;
 }
+
+/* ── Voice note bubble ── */
+.voiceBubble {
+  align-self: flex-start;
+  background: #1e2c33;
+  border-radius: 0 10px 10px 10px;
+  padding: 10px 10px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 72%;
+  animation: popIn 0.2s ease-out both;
+  position: relative;
+  margin-top: 3px;
+}
+
+.voiceBubble::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -6px;
+  width: 0; height: 0;
+  border-top: 6px solid #1e2c33;
+  border-left: 6px solid transparent;
+}
+
+.voicePlayBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #25D366;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.voicePlayBtn:active { transform: scale(0.9); }
+
+.voiceWaveform {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  height: 28px;
+}
+
+.voiceBar {
+  flex: 1;
+  min-height: 3px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 1px;
+  transition: background 0.2s;
+}
+
+.voiceBarPlayed { background: #25D366; }
+
+.voiceBarLive {
+  animation: waveAnim 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes waveAnim {
+  from { transform: scaleY(1); }
+  to   { transform: scaleY(0.4); }
+}
+
+.voiceTimer {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.voiceTimerTotal { color: rgba(255,255,255,0.2); }

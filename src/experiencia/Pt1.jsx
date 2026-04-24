@@ -98,11 +98,6 @@ export default function Pt1() {
       {/* Status bar */}
       <div className={styles.statusBar}>
         <span className={styles.statusTime}>{clockTime}</span>
-        <div className={styles.statusIcons}>
-          <span className={styles.signal}>▪▪▪▪</span>
-          <span className={styles.wifi}>WiFi</span>
-          <span className={styles.battery}>100%</span>
-        </div>
       </div>
 
       {/* ── RINGING ── */}
@@ -169,11 +164,11 @@ export default function Pt1() {
 
           <div className={styles.activeActions}>
             <div className={styles.activeBtn}>
-              <div className={styles.activeBtnIcon}>🔇</div>
+              <div className={styles.activeBtnIcon}>&#9646;&#9646;</div>
               <span>silencio</span>
             </div>
             <div className={styles.activeBtn}>
-              <div className={styles.activeBtnIcon}>🔊</div>
+              <div className={styles.activeBtnIcon}>&#9654;</div>
               <span>altavoz</span>
             </div>
             <div className={styles.activeBtn} onClick={() => navigate('/pt4')}>

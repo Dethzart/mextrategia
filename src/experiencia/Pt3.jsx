@@ -73,8 +73,8 @@ export default function Pt3() {
           <div className={styles.headerSub}>visto hoy</div>
         </div>
         <div className={styles.headerIcons}>
-          <span>📹</span>
-          <span>📞</span>
+          <span>&#9654;</span>
+          <span>&#9990;</span>
         </div>
       </div>
 
