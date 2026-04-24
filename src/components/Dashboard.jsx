@@ -128,6 +128,7 @@ export default function Dashboard({ dbVotes, setDbVotes }) {
   const [pendingAction, setPendingAction]= useState(null);
   const [showTour,      setShowTour]     = useState(false);
   const userId = useRef(getUserId());
+  const isVotingRef = useRef(false);
 
   useEffect(() => {
     if (localStorage.getItem('mextrategia_tour_done') !== '1') {
@@ -181,6 +182,9 @@ export default function Dashboard({ dbVotes, setDbVotes }) {
   }
 
   async function doVote(corpId) {
+    if (isVotingRef.current) return;
+    isVotingRef.current = true;
+
     const uid      = userId.current;
     const removing = votedCorp === corpId;
     const prev     = votedCorp;
@@ -199,11 +203,15 @@ export default function Dashboard({ dbVotes, setDbVotes }) {
 
     if (!removing) { setRecentVote(corpId); setTimeout(() => setRecentVote(null), 900); }
 
-    if (removing) {
-      await supabase.from('votes').delete().eq('user_id', uid);
-    } else {
-      await supabase.from('votes')
-        .upsert({ user_id: uid, corp_id: corpId }, { onConflict: 'user_id' });
+    try {
+      if (removing) {
+        await supabase.from('votes').delete().eq('user_id', uid);
+      } else {
+        await supabase.from('votes')
+          .upsert({ user_id: uid, corp_id: corpId }, { onConflict: 'user_id' });
+      }
+    } finally {
+      setTimeout(() => { isVotingRef.current = false; }, 800);
     }
   }
 
