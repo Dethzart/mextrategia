@@ -17,7 +17,9 @@
   z-index: 200;
   transform: translateY(0);
   transition: transform 0.3s ease;
-  background: var(--bg-primary);
+  background: rgba(6, 6, 8, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .site-header--hidden { transform: translateY(-100%); }
 
@@ -173,7 +175,10 @@
 .panel {
   background: var(--bg-panel);
   border: 1px solid var(--border);
-  padding: 24px;
+  padding: 28px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 2px;
 }
 
 .panel-header {
@@ -204,6 +209,9 @@
   grid-template-columns: repeat(4, 1fr);
   background: var(--bg-panel);
   border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 2px;
 }
 .counter-block {
   text-align: center;
@@ -239,9 +247,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0;
+  padding: 18px 0;
   border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease;
 }
+.domain-card:hover { background: rgba(255,255,255,0.015); }
 .domain-card:last-child { border-bottom: none; }
 .domain-info { display: flex; flex-direction: column; gap: 4px; }
 .domain-name {
@@ -497,7 +507,7 @@
   color: var(--text-primary);
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  padding: 20px;
+  padding: 24px;
   text-align: center;
   margin-bottom: 16px;
   letter-spacing: 0.5px;

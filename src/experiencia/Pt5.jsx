@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Pt5.module.css';
 
-const AUDIO_SRC = '/acto1/Audio2VoiceNote.mp3';
+const AUDIO_SRC = '/acto1/voicenote.m4a';
 const BAR_COUNT = 30;
 
 const BAR_HEIGHTS = Array.from({ length: BAR_COUNT }, (_, i) => {

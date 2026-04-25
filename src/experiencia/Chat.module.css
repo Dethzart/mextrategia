@@ -235,6 +235,15 @@
   color: #53bdeb;
 }
 
+.forwardedLabel {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  color: #8696a0;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+
 /* ── Typing ── */
 .typingBubble {
   align-self: flex-start;

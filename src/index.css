@@ -3,24 +3,24 @@
    ═══════════════════════════════════════════════════ */
 
 :root {
-  --bg-primary:    #f7f6f2;
-  --bg-secondary:  #eeecea;
-  --bg-panel:      #ffffff;
-  --bg-hover:      #f2f0eb;
-  --border:        rgba(20, 18, 14, 0.09);
-  --border-accent: rgba(20, 18, 14, 0.20);
+  --bg-primary:    #060608;
+  --bg-secondary:  #0a0a0d;
+  --bg-panel:      rgba(13, 13, 16, 0.6);
+  --bg-hover:      rgba(255, 255, 255, 0.03);
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-accent: rgba(201, 168, 76, 0.3);
 
-  --text-primary:   #1a1916;
-  --text-secondary: #4e4c46;
-  --text-muted:     #9a9890;
+  --text-primary:   #eaeaec;
+  --text-secondary: #a0a0a6;
+  --text-muted:     #66666d;
 
-  /* Paleta apagada — funciona sobre blanco */
-  --accent-orange: #b03a15;
-  --accent-green:  #265e3a;
-  --accent-red:    #8a1e1e;
-  --accent-blue:   #1a3562;
-  --accent-yellow: #7a5e12;
-  --accent-cyan:   #1a5454;
+  /* Paleta apagada y elegante */
+  --accent-orange: #c9a84c; /* Gold/Bronze */
+  --accent-green:  #347a4d;
+  --accent-red:    #a33535;
+  --accent-blue:   #3b5a8c;
+  --accent-yellow: #a1832d;
+  --accent-cyan:   #348585;
 
   --font-mono:  'JetBrains Mono', 'Courier New', monospace;
   --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, sans-serif;

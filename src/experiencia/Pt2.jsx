@@ -24,7 +24,7 @@ const TEXT_MESSAGES = [
   { text: 'Te acabo de mandar el acceso por correo.', delay: 2500 },
 ];
 
-const AUDIO_SRC = '/acto1/Audio2VoiceNote.mp3';
+const AUDIO_SRC = '/acto1/voicenote.m4a';
 const BAR_HEIGHTS = [
   0.15, 0.25, 0.5, 0.8, 0.6, 0.35, 0.45, 0.7, 1.0, 0.85,
   0.6, 0.4, 0.2, 0.25, 0.55, 0.75, 0.65, 0.3, 0.2, 0.6,
@@ -196,6 +196,12 @@ export default function Pt2() {
         {/* Voice note bubble */}
         {showVoice && (
           <div className={styles.voiceBubbleOld} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+            <div className={styles.forwardedLabel}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: 4 }}>
+                <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/>
+              </svg>
+              Reenviado
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <button className={styles.voicePlayBtn} onClick={() => { playClick(); togglePlay(); }}>
                 {isPlaying ? '\u275A\u275A' : '\u25B6'}
