@@ -22,6 +22,7 @@ export default function Pt4() {
   const navigate = useNavigate();
   const [time, setTime] = useState(getClockTime);
   const [showNotif, setShowNotif] = useState(false);
+  const [voiceDuration, setVoiceDuration] = useState('0:00');
 
   useThemeColor('#0e1215');
 
@@ -31,6 +32,15 @@ export default function Pt4() {
   }, []);
 
   useEffect(() => {
+    const a = new Audio('/acto1/voicenote.m4a');
+    a.addEventListener('loadedmetadata', () => {
+      if (isFinite(a.duration)) {
+        const m = Math.floor(a.duration / 60);
+        const s = Math.floor(a.duration % 60);
+        setVoiceDuration(`${m}:${s.toString().padStart(2, '0')}`);
+      }
+    });
+
     const t = setTimeout(() => {
       setShowNotif(true);
       playPop();
@@ -59,7 +69,7 @@ export default function Pt4() {
             <span className={styles.notifTime}>ahora</span>
           </div>
           <div className={styles.notifSender}>Dethz Sagrav</div>
-          <div className={styles.notifPreview}>&#9654; Nota de voz · 0:37</div>
+          <div className={styles.notifPreview}>&#9654; Nota de voz · {voiceDuration}</div>
         </div>
       )}
 
